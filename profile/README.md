@@ -2,7 +2,7 @@
 
 > ## « Le roleplay mérite mieux qu’une succession de promesses, de paywalls et de scripts recyclés. »
 
-**BT CORE** est un collectif de développeurs réunis autour d’un objectif commun : construire un socle central, modulaire et durable pour créer, tester et partager des fonctionnalités destinées aux serveurs roleplay.
+**BT CORE est un core communautaire conçu pour [Open2077](https://open2077.net/).** Le projet réunit des développeurs autour d’un objectif commun : construire un socle central, modulaire et durable pour créer, tester et partager des fonctionnalités destinées aux serveurs roleplay.
 
 > [!IMPORTANT]
 > BT CORE est actuellement en construction. Le projet évolue à travers l’expérimentation, les retours du terrain et la collaboration.
