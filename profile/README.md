@@ -1,8 +1,6 @@
 # BT CORE
 
 > ## « Le roleplay mérite mieux qu’une succession de promesses, de paywalls et de scripts recyclés. »
->
-> ### Construisons quelque chose de solide, ensemble.
 
 **BT CORE** est un collectif de développeurs réunis autour d’un objectif commun : construire un socle central, modulaire et durable pour créer, tester et partager des fonctionnalités destinées aux serveurs roleplay.
 
