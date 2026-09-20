@@ -4,8 +4,10 @@
 
 **BT CORE** est un collectif de développeurs réunis autour d’un objectif commun : construire un socle central, modulaire et durable pour créer, tester et partager des fonctionnalités destinées aux serveurs roleplay.
 
-> [!NOTE]
+> [!IMPORTANT]
 > BT CORE est actuellement en construction. Le projet évolue à travers l’expérimentation, les retours du terrain et la collaboration.
+>
+> BT CORE ne cherche pas seulement à construire sur Open77. Le projet souhaite aussi contribuer à son évolution, à sa fiabilisation et à son adoption.
 
 ## Pourquoi BT CORE existe
 
@@ -42,9 +44,6 @@ Le core et ses ressources servent de terrain d’expérimentation pour :
 - expérimenter de nouvelles fonctionnalités ;
 - produire des ressources de référence ;
 - partager des retours issus de conditions réelles.
-
-> [!IMPORTANT]
-> BT CORE ne cherche pas seulement à construire sur Open77. Le projet souhaite aussi contribuer à son évolution, à sa fiabilisation et à son adoption.
 
 ## Sortir du modèle « gratuit, puis VIP »
 
