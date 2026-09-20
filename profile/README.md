@@ -10,7 +10,7 @@ BT CORE souhaite proposer une autre voie.
 
 ## Un collectif autour d’un socle commun
 
-Notre objectif est de rassembler des développeurs expérimentés — notamment ceux qui développaient déjà avant l’arrivée de l’IA générative — ainsi que des créateurs qui apprécient le vibe coding et les nouvelles méthodes de développement.
+Notre objectif est de rassembler des développeurs expérimentés, notamment ceux qui développaient déjà avant l’arrivée de l’IA générative, ainsi que des créateurs qui apprécient le vibe coding et les nouvelles méthodes de développement.
 
 Le projet s’articule autour d’un core central, modulaire et évolutif, sur lequel chacun pourra construire, améliorer et publier des fonctionnalités destinées aux serveurs roleplay.
 
