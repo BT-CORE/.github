@@ -1,0 +1,97 @@
+---
+title: "Exports client"
+description: "Lire l'état du personnage et contrôler le HUD BT CORE depuis une ressource client."
+icon: "display"
+---
+
+Appeler chaque export client avec `Open77.exports.call(...):await()`.
+
+## `isReady`
+
+Indique si l'instantané du personnage local est prêt.
+
+```lua
+--- Signature : isReady()
+---@return boolean ready Vrai lorsque le personnage local est prêt.
+local ready = Open77.exports.call("bt_core", "isReady"):await()
+```
+
+## `snapshot`
+
+Retourne le dernier instantané reçu du serveur.
+
+```lua
+--- Signature : snapshot()
+---@return table? snapshot Dernier état, ou nil avant la disponibilité.
+local player = Open77.exports.call("bt_core", "snapshot"):await()
+```
+
+## `hideUI`
+
+Masque toute l'interface de jeu BT CORE. Les barrières de disponibilité et
+d'onboarding restent autoritaires.
+
+```lua
+--- Signature : hideUI()
+---@return boolean success Toujours vrai.
+local ok = Open77.exports.call("bt_core", "hideUI"):await()
+```
+
+## `showUI`
+
+Libère le masquage global. Cet appel ne peut pas afficher l'interface avant la
+disponibilité du personnage ni pendant un onboarding bloquant.
+
+```lua
+--- Signature : showUI()
+---@return boolean success Toujours vrai.
+local ok = Open77.exports.call("bt_core", "showUI"):await()
+```
+
+## `hide`
+
+Masque un composant. Les valeurs acceptées sont `hud`, `watermark`, `all` et
+`ui`. `all` et `ui` sont des alias du masquage global.
+
+```lua
+--- Signature : hide(component)
+---@param component string hud, watermark, all ou ui.
+---@return boolean success Faux pour un composant inconnu.
+---@return string? errorCode unknown_ui_component en cas de rejet.
+local ok, err = Open77.exports.call("bt_core", "hide", "hud"):await()
+```
+
+## `show`
+
+Affiche un composant lorsque la barrière de jeu l'autorise.
+
+```lua
+--- Signature : show(component)
+---@param component string hud, watermark, all ou ui.
+---@return boolean success Faux pour un composant inconnu.
+---@return string? errorCode unknown_ui_component en cas de rejet.
+local ok, err = Open77.exports.call("bt_core", "show", "watermark"):await()
+```
+
+## `isVisible`
+
+Retourne la visibilité effective après les contrôles globaux, l'onboarding et
+l'état de masquage.
+
+```lua
+--- Signature : isVisible(component)
+---@param component string hud, watermark, all ou ui.
+---@return boolean? visible Visibilité effective, ou nil pour une valeur inconnue.
+---@return string? errorCode unknown_ui_component en cas de rejet.
+local visible, err = Open77.exports.call("bt_core", "isVisible", "hud"):await()
+```
+
+## `uiState`
+
+Retourne un instantané de tous les drapeaux de visibilité publics.
+
+```lua
+--- Signature : uiState()
+---@return table state Champs allowed, allHidden, hud et watermark.
+local state = Open77.exports.call("bt_core", "uiState"):await()
+```

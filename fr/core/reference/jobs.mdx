@@ -1,0 +1,129 @@
+---
+title: "Exports de métiers"
+description: "Catalogue, affectations, grades et métier principal."
+icon: "code"
+---
+
+Appeler ces exports serveur avec `Open77.exports.call(...):await()`. Sauf indication contraire, le joueur doit posséder un personnage chargé.
+
+## `listJobCatalog`
+
+Retourne une copie du catalogue des métiers configurés.
+
+**Valeurs configurées :** `unemployed` (grade `0`), `police` (grades `0`, `1`,
+`2`) et `fixer` (grades `0`, `1`). Elles sont extensibles dans `Config.jobs`.
+
+```lua
+--- Signature de l'export : listJobCatalog()
+---@return table<string, table> catalog Copie défensive de `Config.jobs` ; vide sans configuration.
+
+local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
+```
+
+## `getJobs`
+
+Retourne tous les métiers du personnage avec leurs grades résolus.
+
+```lua
+--- Signature de l'export : getJobs(playerId)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@return table[] jobs Métiers attribués et résolus ; vide si le personnage est indisponible.
+
+local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
+```
+
+## `getPrimaryJob`
+
+Retourne le métier principal ou le métier `unemployed` par défaut.
+
+```lua
+--- Signature de l'export : getPrimaryJob(playerId)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@return table job Métier principal, ou repli non persistant `unemployed` au grade `0`.
+
+local job = Open77.exports.call("bt_core", "getPrimaryJob", playerId):await()
+```
+
+## `hasJob`
+
+Indique si le personnage possède un métier.
+
+**Paramètres :** `jobKey` accepte une clé de `Config.jobs` : `unemployed`,
+`police` ou `fixer` par défaut.
+
+```lua
+--- Signature de l'export : hasJob(playerId, jobKey)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@param jobKey string Clé de métier configurée ; valeurs livrées : `unemployed`, `police` et `fixer`.
+---@return boolean hasJob `true` si le métier configuré est attribué ; sinon `false`.
+
+local employed = Open77.exports.call("bt_core", "hasJob", playerId, "police"):await()
+```
+
+## `addJob`
+
+Attribue un métier configuré et un grade facultatif.
+
+**Paramètres :** `jobKey` accepte `unemployed`, `police` ou `fixer` par défaut.
+`grade`, facultatif, vaut `0` par défaut ; les grades disponibles sont `0` pour
+`unemployed`, `0` à `2` pour `police` et `0` à `1` pour `fixer`. Ces valeurs
+sont extensibles dans `Config.jobs`.
+
+```lua
+--- Signature de l'export : addJob(playerId, jobKey, grade)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param jobKey string Clé de métier configurée ; valeurs livrées : `unemployed`, `police` et `fixer`.
+---@param grade? integer Grade facultatif ; vaut `0` par défaut et doit exister dans `Config.jobs[jobKey].grades`.
+---@return boolean success `true` si le métier est attribué ; `false` s'il est indisponible, déjà attribué ou non configuré à ce grade.
+
+local ok = Open77.exports.call("bt_core", "addJob", playerId, "police", 0):await()
+```
+
+## `removeJob`
+
+Retire un métier du personnage.
+
+**Paramètres :** `jobKey` doit correspondre à un métier attribué au personnage.
+Les clés configurées par défaut sont `unemployed`, `police` et `fixer`.
+
+```lua
+--- Signature de l'export : removeJob(playerId, jobKey)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param jobKey string Clé d'un métier actuellement attribué au personnage.
+---@return boolean success `true` si le métier est retiré ; `false` s'il est indisponible ou non attribué.
+
+local ok = Open77.exports.call("bt_core", "removeJob", playerId, "police"):await()
+```
+
+## `setJobGrade`
+
+Modifie le grade d'un métier déjà attribué.
+
+**Paramètres :** `jobKey` doit être attribué. `grade` accepte `0` pour
+`unemployed`, `0` à `2` pour `police` ou `0` à `1` pour `fixer` par défaut.
+
+```lua
+--- Signature de l'export : setJobGrade(playerId, jobKey, grade)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param jobKey string Clé d'un métier actuellement attribué au personnage.
+---@param grade integer Grade configuré : `0` pour `unemployed`, `0..2` pour `police` ou `0..1` pour `fixer` dans la configuration livrée ; cet export n'applique aucune valeur par défaut.
+---@return boolean success `true` si le grade est modifié ; `false` si le métier n'est pas attribué ou le grade non configuré.
+
+local ok = Open77.exports.call("bt_core", "setJobGrade", playerId, "police", 1):await()
+```
+
+## `setPrimaryJob`
+
+Définit comme principal un métier déjà attribué.
+
+**Paramètres :** `jobKey` doit correspondre à un métier attribué au personnage.
+Les clés configurées par défaut sont `unemployed`, `police` et `fixer`.
+
+```lua
+--- Signature de l'export : setPrimaryJob(playerId, jobKey)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param jobKey string Clé d'un métier actuellement attribué au personnage.
+---@return boolean success `true` si le métier devient principal ; `false` s'il n'est pas attribué.
+
+local ok = Open77.exports.call("bt_core", "setPrimaryJob", playerId, "police"):await()
+```

@@ -1,0 +1,129 @@
+---
+title: "Job exports"
+description: "Job catalog, assignment, grades and primary-job contracts."
+icon: "code"
+---
+
+Call these server exports with `Open77.exports.call(...):await()`. Unless a section says otherwise, the player must have a loaded character.
+
+## `listJobCatalog`
+
+Returns a copy of the configured job catalog.
+
+**Configured values:** `unemployed` (grade `0`), `police` (grades `0`, `1`,
+`2`), and `fixer` (grades `0`, `1`). Extend them in `Config.jobs`.
+
+```lua
+--- Export signature: listJobCatalog()
+---@return table<string, table> catalog Defensive copy of `Config.jobs`; empty when unconfigured.
+
+local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
+```
+
+## `getJobs`
+
+Returns every character job with its resolved grade.
+
+```lua
+--- Export signature: getJobs(playerId)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@return table[] jobs Resolved held jobs; empty when the character is unavailable.
+
+local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
+```
+
+## `getPrimaryJob`
+
+Returns the primary job or the default `unemployed` job.
+
+```lua
+--- Export signature: getPrimaryJob(playerId)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@return table job Primary job, or the non-persisted `unemployed` grade `0` fallback.
+
+local job = Open77.exports.call("bt_core", "getPrimaryJob", playerId):await()
+```
+
+## `hasJob`
+
+Returns whether the character holds a job.
+
+**Parameters:** `jobKey` accepts a key from `Config.jobs`: `unemployed`,
+`police`, or `fixer` by default.
+
+```lua
+--- Export signature: hasJob(playerId, jobKey)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@param jobKey string Configured job key; shipped values are `unemployed`, `police`, and `fixer`.
+---@return boolean hasJob `true` when the configured job is held; otherwise `false`.
+
+local employed = Open77.exports.call("bt_core", "hasJob", playerId, "police"):await()
+```
+
+## `addJob`
+
+Assigns a configured job and an optional grade.
+
+**Parameters:** `jobKey` accepts `unemployed`, `police`, or `fixer` by default.
+Optional `grade` defaults to `0`; available grades are `0` for `unemployed`,
+`0` to `2` for `police`, and `0` to `1` for `fixer`. Extend these values in
+`Config.jobs`.
+
+```lua
+--- Export signature: addJob(playerId, jobKey, grade)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param jobKey string Configured job key; shipped values are `unemployed`, `police`, and `fixer`.
+---@param grade? integer Optional grade; defaults to `0` and must exist in `Config.jobs[jobKey].grades`.
+---@return boolean success `true` when assigned; `false` if unavailable, already held, or not configured at that grade.
+
+local ok = Open77.exports.call("bt_core", "addJob", playerId, "police", 0):await()
+```
+
+## `removeJob`
+
+Removes a job from the character.
+
+**Parameters:** `jobKey` must be one of the character's assigned jobs. Default
+configured keys are `unemployed`, `police`, and `fixer`.
+
+```lua
+--- Export signature: removeJob(playerId, jobKey)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param jobKey string Key of a job currently held by the character.
+---@return boolean success `true` when removed; `false` when unavailable or not held.
+
+local ok = Open77.exports.call("bt_core", "removeJob", playerId, "police"):await()
+```
+
+## `setJobGrade`
+
+Updates the grade of an assigned job.
+
+**Parameters:** `jobKey` must be assigned. `grade` accepts `0` for
+`unemployed`, `0` to `2` for `police`, or `0` to `1` for `fixer` by default.
+
+```lua
+--- Export signature: setJobGrade(playerId, jobKey, grade)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param jobKey string Key of a job currently held by the character.
+---@param grade integer Configured grade: `0` for `unemployed`, `0..2` for `police`, or `0..1` for `fixer` by default; no default is applied by this export.
+---@return boolean success `true` when updated; `false` when the job is not held or the grade is not configured.
+
+local ok = Open77.exports.call("bt_core", "setJobGrade", playerId, "police", 1):await()
+```
+
+## `setPrimaryJob`
+
+Marks an assigned job as primary.
+
+**Parameters:** `jobKey` must be one of the character's assigned jobs. Default
+configured keys are `unemployed`, `police`, and `fixer`.
+
+```lua
+--- Export signature: setPrimaryJob(playerId, jobKey)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param jobKey string Key of a job currently held by the character.
+---@return boolean success `true` when updated; `false` when the job is not held.
+
+local ok = Open77.exports.call("bt_core", "setPrimaryJob", playerId, "police"):await()
+```

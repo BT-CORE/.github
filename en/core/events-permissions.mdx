@@ -1,0 +1,46 @@
+---
+title: "Permissions and public limits"
+description: "Declared capabilities, events and integration boundaries."
+icon: "shield-halved"
+---
+
+## Public limits
+
+`bt_core` exposes no command and no network event for third-party resources.
+Events prefixed with `bt_core:` drive the internal session, onboarding and HUD.
+They are not a stable integration contract and must not be emitted externally.
+
+Use exports for cross-resource integration. Server exports require a loaded
+character except `listJobCatalog` and `listGarages`. Always handle `false` or
+`nil` from a write.
+
+## Declared permissions
+
+The active manifest declares exactly these permissions:
+
+- `database.access`
+- `network.events`
+- `players.life.kill`
+- `players.life.respawn`
+- `players.life.read`
+- `players.life.freeze`
+- `player.appearance.edit`
+- `ui.vanilla.hud`
+- `players.stats.read`
+- `players.stats.apply`
+- `players.read`
+- `combat.config`
+- `world.vehicles`
+- `camera.script`
+- `screen.effects`
+- `session.menus`
+- `audio.play`
+- `players.teleport`
+- `players.life.visibility`
+- `players.life.falldamage`
+
+## Security boundary
+
+Persistent mutations run on the server. Do not expose these exports directly
+to untrusted client payloads. Validate the caller's authorization and all
+domain inputs in the resource that receives the network request.

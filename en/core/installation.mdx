@@ -1,0 +1,72 @@
+---
+title: "Install bt_core"
+description: "Configure MariaDB, load the central resource and verify startup."
+icon: "download"
+---
+
+## Requirements
+
+- an Open2077 server compatible with `open77_version ">=0.0.1"`;
+- a MariaDB database reachable by the server;
+- permission to edit `server.jsonc` and the server environment.
+
+`bt_core` has no dependency on another BT CORE plugin.
+
+## Install the resource
+
+1. Place the release in `resources/bt_core/`.
+2. Add `bt_core` to `resources.load` in `server.jsonc`.
+3. Configure the Open2077 database bridge.
+
+```json
+{
+  "database": {
+    "enabled": true,
+    "connectionString": "",
+    "connectionStringEnvironmentVariable": "OP77_DATABASE_CONNECTION",
+    "maxRows": 10000
+  }
+}
+```
+
+4. Set `OP77_DATABASE_CONNECTION` in the server environment. For example:
+
+```text
+Server=localhost;Port=3307;Database=open77rp;User Id=bt_core;Password=replace-me;
+```
+
+5. Create the `open77rp` database if it does not exist.
+6. Start the server and confirm that `bt_core` reaches its ready state.
+
+<Warning>
+Never commit a database password. Use a dedicated MariaDB account with only
+the permissions required by this resource.
+</Warning>
+
+## Database behavior
+
+`server/db.lua` creates and migrates the following tables automatically:
+
+- `bt_core_characters`;
+- `bt_core_ledger`;
+- `bt_core_character_jobs`;
+- `bt_core_vehicles`.
+
+`sql/001_bt_core.sql` is a readable reference. Do not execute it on every
+startup. Migrations are designed to remain idempotent.
+
+## Verify the installation
+
+Confirm all of the following before installing plugins:
+
+- the database connection succeeds;
+- schema creation or migration completes without error;
+- the resource prints its ready message;
+- a player can complete onboarding and reach the configured spawn;
+- reconnecting restores the character and persistent state;
+- the HUD appears only after the character is ready.
+
+## Load order
+
+Load `bt_core` before every resource that calls one of its exports. Keep plugin
+load order aligned with each plugin's dependency page.

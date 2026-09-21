@@ -1,0 +1,128 @@
+---
+title: "Progression and vehicle exports"
+description: "Experience, garage and persistent vehicle contracts."
+icon: "code"
+---
+
+Call these server exports with `Open77.exports.call(...):await()`. Unless a section says otherwise, the player must have a loaded character.
+
+## `getXp`
+
+Returns the character's experience points.
+
+```lua
+--- Export signature: getXp(playerId)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@return integer xp Current XP, or `0` when the character is unavailable.
+
+local xp = Open77.exports.call("bt_core", "getXp", playerId):await()
+```
+
+## `setXp`
+
+Sets the character's experience points.
+
+**Parameters:** `amount` is rounded down and clamped to `0`. No default is
+applied.
+
+```lua
+--- Export signature: setXp(playerId, amount)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param amount number Number rounded down and then clamped to `0`; no default.
+---@return boolean success `true` when updated; `false` when the character is unavailable or any supplied key/value is invalid.
+
+local ok = Open77.exports.call("bt_core", "setXp", playerId, 1000):await()
+```
+
+## `addXp`
+
+Adds experience points to the character.
+
+**Parameters:** `amount` must be non-zero and may be negative. The resulting XP
+cannot be negative.
+
+```lua
+--- Export signature: addXp(playerId, amount)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param amount number Non-zero positive or negative number; no default.
+---@return boolean success `true` when updated; `false` when the character is unavailable or any supplied key/value is invalid.
+
+local ok = Open77.exports.call("bt_core", "addXp", playerId, 25):await()
+```
+
+## `listGarages`
+
+Returns a copy of the configured garages.
+
+```lua
+--- Export signature: listGarages()
+---@return table<string, table> garages Defensive copy of `Config.garages`; includes `default` as shipped.
+
+local garages = Open77.exports.call("bt_core", "listGarages"):await()
+```
+
+## `listVehicles`
+
+Returns owned vehicles with an optional garage filter.
+
+**Parameters:** optional `garageKey` has no filter by default. The shipped key
+is `default`; add more keys in `Config.garages`.
+
+```lua
+--- Export signature: listVehicles(playerId, garageKey)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@param garageKey? string Optional configured garage key; omitted means no filter. The shipped key is `default`.
+---@return table[] vehicles Owned vehicles matching the optional filter; empty when none or unavailable.
+
+local vehicles = Open77.exports.call("bt_core", "listVehicles", playerId, "default"):await()
+```
+
+## `giveVehicle`
+
+Creates an owned, stored vehicle. `opts.garageKey` is optional.
+
+**Parameters:** `record` must start with `Vehicle.` and contain at most 96
+characters. Optional `opts` defaults to `{}`. Optional `opts.garageKey` defaults
+to `default`; `default` is the only shipped key and more can be added in
+`Config.garages`. An unknown key falls back to `default`.
+
+```lua
+--- Export signature: giveVehicle(playerId, record, opts)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param record string Open2077 vehicle record starting with `Vehicle.`, limited to 96 characters.
+---@param opts? table Optional settings. `garageKey` defaults to `default`; unknown keys also fall back to `default`.
+---@return string? vehicleUid Persistent identifier on success; otherwise `nil`.
+---@return string plateOrError Generated plate on success; otherwise `not_ready`, `invalid_record`, or `database_error`.
+
+local vehicleUid, plateOrError = Open77.exports.call("bt_core", "giveVehicle", playerId,
+    "Vehicle.v_standard2_thorton_galena_player", { garageKey = "default" }):await()
+```
+
+## `spawnVehicle`
+
+Spawns a stored vehicle at its garage point.
+
+```lua
+--- Export signature: spawnVehicle(playerId, vehicleUid)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param vehicleUid string Persistent vehicle identifier returned by `giveVehicle` or `listVehicles`.
+---@return integer? vehicleId Live Open77 identifier on success; otherwise `nil`.
+---@return string? errorCode `not_ready`, `not_owner`, `not_stored`, `database_error`, or a platform creation error.
+
+local vehicleId, errorCode = Open77.exports.call("bt_core", "spawnVehicle", playerId, vehicleUid):await()
+```
+
+## `storeVehicle`
+
+Finds the live vehicle associated with a persistent identifier, captures its
+state, and stores it. The server resolves the runtime `vehicleId` internally.
+
+```lua
+--- Export signature: storeVehicle(playerId, vehicleUid)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param vehicleUid string Persistent identifier returned by `giveVehicle` or `listVehicles`.
+---@return boolean success `true` only after persistence and platform removal both succeed.
+---@return string? errorCode `not_ready`, `invalid_vehicle_uid`, `not_owner`, `not_out`, `vehicle_unavailable`, `database_error`, `remove_failed`, or a platform removal error.
+
+local ok, errorCode = Open77.exports.call("bt_core", "storeVehicle", playerId, vehicleUid):await()
+```

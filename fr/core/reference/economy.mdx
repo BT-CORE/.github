@@ -1,0 +1,221 @@
+---
+title: "Exports d'économie"
+description: "Contrats du cash, de la banque et des monnaies extensibles."
+icon: "code"
+---
+
+Appeler ces exports serveur avec `Open77.exports.call(...):await()`. Sauf indication contraire, le joueur doit posséder un personnage chargé.
+
+## `getEddies`
+
+Retourne le solde en espèces.
+
+```lua
+--- Signature de l'export : getEddies(playerId)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@return integer balance Solde actuel, ou `0` si l'entrée est indisponible ou invalide.
+
+local eddies = Open77.exports.call("bt_core", "getEddies", playerId):await()
+```
+
+## `setEddies`
+
+Fixe le solde en espèces et journalise le mouvement.
+
+**Paramètres :** `amount` est arrondi à l'entier inférieur et limité à `0` ;
+`reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : setEddies(playerId, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param amount number Nombre arrondi à l'entier inférieur puis limité à `0` ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si la mise à jour réussit ; `false` si le personnage est indisponible ou une clé/valeur fournie est invalide.
+
+local ok = Open77.exports.call("bt_core", "setEddies", playerId, 500, "admin_adjustment"):await()
+```
+
+## `addEddies`
+
+Ajoute des eddies au solde en espèces.
+
+**Paramètres :** `amount` doit être non nul et peut être négatif ; `reason`,
+facultatif, n'a pas de libellé par défaut. Le solde final ne peut pas être
+négatif.
+
+```lua
+--- Signature de l'export : addEddies(playerId, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param amount number Nombre non nul, positif ou négatif ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si la mise à jour réussit ; `false` si le personnage est indisponible ou une clé/valeur fournie est invalide.
+
+local ok = Open77.exports.call("bt_core", "addEddies", playerId, 100, "mission_reward"):await()
+```
+
+## `removeEddies`
+
+Retire des eddies si le solde est suffisant.
+
+**Paramètres :** `amount` doit être positif et est arrondi à l'entier
+inférieur ; `reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : removeEddies(playerId, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param amount number Nombre positif, arrondi à l'entier inférieur ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si le retrait réussit ; `false` pour une entrée invalide, un personnage indisponible ou un solde insuffisant.
+
+local ok = Open77.exports.call("bt_core", "removeEddies", playerId, 50, "shop_purchase"):await()
+```
+
+## `getBank`
+
+Retourne le solde bancaire.
+
+```lua
+--- Signature de l'export : getBank(playerId)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@return integer balance Solde actuel, ou `0` si l'entrée est indisponible ou invalide.
+
+local bank = Open77.exports.call("bt_core", "getBank", playerId):await()
+```
+
+## `setBank`
+
+Fixe le solde bancaire et journalise le mouvement.
+
+**Paramètres :** `amount` est arrondi à l'entier inférieur et limité à `0` ;
+`reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : setBank(playerId, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param amount number Nombre arrondi à l'entier inférieur puis limité à `0` ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si la mise à jour réussit ; `false` si le personnage est indisponible ou une clé/valeur fournie est invalide.
+
+local ok = Open77.exports.call("bt_core", "setBank", playerId, 2500, "admin_adjustment"):await()
+```
+
+## `addBank`
+
+Ajoute un montant au compte bancaire.
+
+**Paramètres :** `amount` doit être non nul et peut être négatif ; `reason`,
+facultatif, n'a pas de libellé par défaut. Le solde final ne peut pas être
+négatif.
+
+```lua
+--- Signature de l'export : addBank(playerId, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param amount number Nombre non nul, positif ou négatif ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si la mise à jour réussit ; `false` si le personnage est indisponible ou une clé/valeur fournie est invalide.
+
+local ok = Open77.exports.call("bt_core", "addBank", playerId, 800, "salary"):await()
+```
+
+## `removeBank`
+
+Retire un montant si le solde bancaire est suffisant.
+
+**Paramètres :** `amount` doit être positif et est arrondi à l'entier
+inférieur ; `reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : removeBank(playerId, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param amount number Nombre positif, arrondi à l'entier inférieur ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si le retrait réussit ; `false` pour une entrée invalide, un personnage indisponible ou un solde insuffisant.
+
+local ok = Open77.exports.call("bt_core", "removeBank", playerId, 200, "invoice"):await()
+```
+
+## `getOther`
+
+Retourne le solde d'une monnaie personnalisée.
+
+**Paramètres :** `key` est extensible, commence par une lettre, puis contient
+des lettres, chiffres ou `_`, sur 32 caractères maximum. Exemples : `black`,
+`capsule`.
+
+```lua
+--- Signature de l'export : getOther(playerId, key)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@param key string Clé de monnaie : une lettre puis lettres, chiffres ou `_` ; 32 caractères maximum.
+---@return integer balance Solde actuel, ou `0` si l'entrée est indisponible ou invalide.
+
+local balance = Open77.exports.call("bt_core", "getOther", playerId, "capsule"):await()
+```
+
+## `setOther`
+
+Fixe le solde d'une monnaie personnalisée.
+
+**Paramètres :** `key` suit le format de
+[`FR server-getOther`](#fr-server-getother). `amount` est arrondi à l'entier inférieur
+et limité à `0` ; `reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : setOther(playerId, key, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param key string Clé de monnaie : une lettre puis lettres, chiffres ou `_` ; 32 caractères maximum.
+---@param amount number Nombre arrondi à l'entier inférieur puis limité à `0` ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si la mise à jour réussit ; `false` si le personnage est indisponible ou une clé/valeur fournie est invalide.
+
+local ok = Open77.exports.call("bt_core", "setOther", playerId, "capsule", 10, "initial_grant"):await()
+```
+
+## `addOther`
+
+Ajoute un montant à une monnaie personnalisée.
+
+**Paramètres :** `key` suit le format de
+[`FR server-getOther`](#fr-server-getother). `amount` doit être non nul et peut être
+négatif ; `reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : addOther(playerId, key, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param key string Clé de monnaie : une lettre puis lettres, chiffres ou `_` ; 32 caractères maximum.
+---@param amount number Nombre non nul, positif ou négatif ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si la mise à jour réussit ; `false` si le personnage est indisponible ou une clé/valeur fournie est invalide.
+
+local ok = Open77.exports.call("bt_core", "addOther", playerId, "capsule", 2, "reward"):await()
+```
+
+## `removeOther`
+
+Retire un montant si le solde personnalisé est suffisant.
+
+**Paramètres :** `key` suit le format de
+[`FR server-getOther`](#fr-server-getother). `amount` doit être positif et est arrondi
+à l'entier inférieur ; `reason`, facultatif, n'a pas de libellé par défaut.
+
+```lua
+--- Signature de l'export : removeOther(playerId, key, amount, reason)
+---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
+---@param key string Clé de monnaie : une lettre puis lettres, chiffres ou `_` ; 32 caractères maximum.
+---@param amount number Nombre positif, arrondi à l'entier inférieur ; aucun défaut.
+---@param reason? string Libellé d'audit facultatif ; `nil` par défaut.
+---@return boolean success `true` si le retrait réussit ; `false` pour une entrée invalide, un personnage indisponible ou un solde insuffisant.
+
+local ok = Open77.exports.call("bt_core", "removeOther", playerId, "capsule", 1, "purchase"):await()
+```
+
+## `listOthers`
+
+Retourne une copie de toutes les monnaies personnalisées.
+
+```lua
+--- Signature de l'export : listOthers(playerId)
+---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
+---@return table<string, integer> balances Copie défensive ; vide si le personnage est indisponible.
+
+local balances = Open77.exports.call("bt_core", "listOthers", playerId):await()
+```

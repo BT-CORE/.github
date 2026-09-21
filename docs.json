@@ -1,0 +1,66 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "linden",
+  "name": "BT CORE",
+  "colors": {
+    "primary": "#664800",
+    "light": "#FFE27A",
+    "dark": "#A87900"
+  },
+  "navigation": {
+    "languages": [
+      {
+        "language": "en",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "en/index",
+              "en/core/installation",
+              "en/core/configuration"
+            ]
+          },
+          {
+            "group": "Core reference",
+            "pages": [
+              "en/core/reference/client",
+              "en/core/reference/identity",
+              "en/core/reference/economy",
+              "en/core/reference/inventory",
+              "en/core/reference/jobs",
+              "en/core/reference/progression-vehicles",
+              "en/core/reference/access-player-data",
+              "en/core/events-permissions"
+            ]
+          }
+        ]
+      },
+      {
+        "language": "fr",
+        "groups": [
+          {
+            "group": "Bien démarrer",
+            "pages": [
+              "fr/index",
+              "fr/core/installation",
+              "fr/core/configuration"
+            ]
+          },
+          {
+            "group": "Référence du core",
+            "pages": [
+              "fr/core/reference/client",
+              "fr/core/reference/identity",
+              "fr/core/reference/economy",
+              "fr/core/reference/inventory",
+              "fr/core/reference/jobs",
+              "fr/core/reference/progression-vehicles",
+              "fr/core/reference/access-player-data",
+              "fr/core/events-permissions"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

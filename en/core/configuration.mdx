@@ -1,0 +1,86 @@
+---
+title: "Configure bt_core"
+description: "Reference for the active defaults in server/config.lua."
+icon: "sliders"
+---
+
+All resource settings live in `server/config.lua`. This is a server-only file;
+do not move secrets or authoritative configuration into client or shared code.
+
+## Runtime defaults
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `Config.defaultSpawn` | `381.358826, -2401.794189, 181.988541` | First arrival position and heading. |
+| `Config.spawn.joinRetryMs` | `250` | Delay between placement checks. |
+| `Config.spawn.joinTimeoutMs` | `30000` | Maximum initial placement wait. |
+| `Config.death.respawnDelayMs` | `4000` | Natural-death respawn delay. |
+| `Config.death.health` | `1.0` | Health ratio requested on respawn. |
+| `Config.death.graceMs` | `5000` | Grace period after respawn. |
+| `Config.vitals.friendlyFire` | `true` | Enables friendly fire through the server combat policy. |
+| `Config.vitals.damageMultiplier` | `1.0` | Global server damage multiplier. |
+| `Config.vitals.sprint.drainPerSecond` | `12.0` | Target stamina drain while sprinting. |
+| `Config.vitals.sprint.tickMs` | `500` | Authoritative sprint drain interval. |
+| `Config.vitals.sprint.heartbeatTimeoutMs` | `4000` | Stops sprint drain after missing client heartbeats. |
+| `Config.jobsPayIntervalMs` | `600000` | Automatic salary interval in milliseconds. |
+| `Config.characterSlots` | `1` | Character slots per account. |
+| `Config.language` | `"en"` | Active locale; unknown values fall back to English. |
+
+## Brand and onboarding
+
+`Config.brand` controls the name, badge and tagline sent to the HUD.
+
+`Config.onboarding` controls:
+
+- `openDelayMs`: delay before opening onboarding; the default is `0`;
+- `rpYearOffset`: RP calendar offset; the default is `51`;
+- `minAge` and `maxAge`: accepted character age range (`18` to `100`);
+- `cinematicAnchor`: server-owned location used by the onboarding camera.
+
+The onboarding form accepts `male` and `female` for sex, and `corpo`,
+`streetkid` or `nomad` for lifepath.
+
+## Combat and vitals
+
+`Config.vitals` defines server policy; clients only report whether the native
+character is sprinting. The server owns stamina mutations, pauses regeneration
+while sprinting and restores the previous regeneration state when sprinting
+stops or the resource shuts down.
+
+The drain loop subtracts only the part not already consumed natively during the
+same interval. This prevents double charging on builds that already drain
+stamina. Keep `heartbeatTimeoutMs` greater than the one-second active heartbeat.
+
+## Jobs
+
+`Config.jobs` is the authoritative job catalog. Each job defines a label,
+category and grades. Each grade has a label, salary and target account.
+
+The default catalog contains:
+
+- `unemployed`, paid `0` to `cash`;
+- `police`, with grades `0` to `2`, paid to `bank`;
+- `fixer`, with grades `0` to `1`, paid to the custom `black` account.
+
+When adding a job, use a stable key and ensure every salary account is either
+`cash`, `bank`, or a custom account already created with `addOther`.
+
+## Garages
+
+`Config.garages` is the authoritative garage catalog. The `default` key must
+always exist because removed or unknown garage keys fall back to it.
+
+```lua
+Config.garages = {
+    default = {
+        label = "Garage",
+        position = { x = 396.0, y = -2390.0, z = 181.99, heading = 90.0 },
+    },
+}
+```
+
+## Languages
+
+The supported locales are `en` and `fr`, defined in `lang/en.lua` and
+`lang/fr.lua`. Add every new user-visible string to both files. Logic and
+WebUI code must not hard-code translated strings.

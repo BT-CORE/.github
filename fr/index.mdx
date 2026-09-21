@@ -1,0 +1,41 @@
+---
+title: "BT CORE"
+description: "Installer et étendre le socle roleplay central pour Open2077."
+icon: "house"
+---
+
+BT CORE est un socle roleplay modulaire pour
+[Open2077](https://open2077.net/). La ressource centrale `bt_core` possède
+l'identité des personnages, l'état persistant et les contrats partagés par les
+plugins qui l'entourent.
+
+## Ce que fournit le core
+
+- identité civile et onboarding des personnages ;
+- cycle de session, placement, mort et respawn ;
+- politique de combat et consommation d'endurance autoritaires côté serveur ;
+- cash, comptes bancaires et monnaies extensibles ;
+- inventaire persistant, expérience, rôles et permissions ;
+- métiers multiples avec salaire ;
+- garages et véhicules possédés persistants ;
+- langue, dernière position et temps de jeu ;
+- HUD de marque pour la santé, l'armure et l'endurance.
+
+## Version actuelle
+
+Cette documentation décrit `bt_core` version `0.8.3`, telle que déclarée dans
+son manifeste. Le core cible Open2077 `>=0.0.1`.
+
+## Commencer
+
+1. [Installer le core](./core/installation).
+2. [Vérifier sa configuration serveur](./core/configuration).
+3. Utiliser les [exports client](./core/reference/client) et la référence
+   serveur pour intégrer une autre ressource.
+4. Lire les [permissions et limites publiques](./core/events-permissions)
+   avant d'activer la ressource.
+
+<Note>
+Les plugins dépendent de `bt_core`. Installer et valider le core avant
+d'ajouter un plugin BT CORE.
+</Note>

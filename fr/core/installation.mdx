@@ -1,0 +1,72 @@
+---
+title: "Installer bt_core"
+description: "Configurer MariaDB, charger la ressource centrale et vérifier son démarrage."
+icon: "download"
+---
+
+## Prérequis
+
+- un serveur Open2077 compatible avec `open77_version ">=0.0.1"` ;
+- une base MariaDB joignable par le serveur ;
+- l'accès à `server.jsonc` et à l'environnement du serveur.
+
+`bt_core` ne dépend d'aucun autre plugin BT CORE.
+
+## Installer la ressource
+
+1. Placer la version publiée dans `resources/bt_core/`.
+2. Ajouter `bt_core` à `resources.load` dans `server.jsonc`.
+3. Configurer le bridge de base de données Open2077.
+
+```json
+{
+  "database": {
+    "enabled": true,
+    "connectionString": "",
+    "connectionStringEnvironmentVariable": "OP77_DATABASE_CONNECTION",
+    "maxRows": 10000
+  }
+}
+```
+
+4. Définir `OP77_DATABASE_CONNECTION` dans l'environnement du serveur :
+
+```text
+Server=localhost;Port=3307;Database=open77rp;User Id=bt_core;Password=replace-me;
+```
+
+5. Créer la base `open77rp` si elle n'existe pas.
+6. Démarrer le serveur et confirmer que `bt_core` atteint son état prêt.
+
+<Warning>
+Ne jamais versionner un mot de passe. Utiliser un compte MariaDB dédié avec
+uniquement les droits requis par cette ressource.
+</Warning>
+
+## Comportement de la base
+
+`server/db.lua` crée et migre automatiquement les tables suivantes :
+
+- `bt_core_characters` ;
+- `bt_core_ledger` ;
+- `bt_core_character_jobs` ;
+- `bt_core_vehicles`.
+
+`sql/001_bt_core.sql` est une référence lisible. Ne pas l'exécuter à chaque
+démarrage. Les migrations doivent rester idempotentes.
+
+## Vérifier l'installation
+
+Avant d'installer des plugins, confirmer que :
+
+- la connexion à la base réussit ;
+- la création ou migration du schéma se termine sans erreur ;
+- la ressource affiche son message de disponibilité ;
+- un joueur peut terminer l'onboarding et atteindre le spawn configuré ;
+- une reconnexion restaure le personnage et ses données persistantes ;
+- le HUD apparaît uniquement lorsque le personnage est prêt.
+
+## Ordre de chargement
+
+Charger `bt_core` avant toute ressource qui appelle ses exports. Respecter
+ensuite les dépendances indiquées sur la page de chaque plugin.

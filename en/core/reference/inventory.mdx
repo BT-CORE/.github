@@ -1,0 +1,93 @@
+---
+title: "Inventory exports"
+description: "Persistent item quantity contracts."
+icon: "code"
+---
+
+Call these server exports with `Open77.exports.call(...):await()`. Unless a section says otherwise, the player must have a loaded character.
+
+## `getItem`
+
+Returns an item's persistent quantity.
+
+**Parameters:** `key` starts with a letter, then contains letters, digits, `_`,
+or `.`, with at most 96 characters. Use a valid TweakDB item identifier such as
+`Items.Preset_Lexington_Default`.
+
+```lua
+--- Export signature: getItem(playerId, key)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
+---@return integer quantity Stored quantity, or `0` when unavailable or invalid.
+
+local quantity = Open77.exports.call("bt_core", "getItem", playerId, "Items.Preset_Lexington_Default"):await()
+```
+
+## `setItem`
+
+Sets an item's persistent quantity.
+
+**Parameters:** `key` follows the format documented in
+[`server-getItem`](#server-getitem). `quantity` is rounded down and clamped to
+`0`; optional `reason` has no default label.
+
+```lua
+--- Export signature: setItem(playerId, key, quantity, reason)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
+---@param quantity number Number rounded down and then clamped to `0`; no default.
+---@param reason? string Optional audit label; defaults to `nil`.
+---@return boolean success `true` when updated; `false` when the character is unavailable or any supplied key/value is invalid.
+
+local ok = Open77.exports.call("bt_core", "setItem", playerId, "Items.Preset_Lexington_Default", 1, "admin_adjustment"):await()
+```
+
+## `addItem`
+
+Adds a quantity to the persistent inventory.
+
+**Parameters:** `key` follows the format documented in
+[`server-getItem`](#server-getitem). `quantity` must be non-zero and may be
+negative; optional `reason` has no default label.
+
+```lua
+--- Export signature: addItem(playerId, key, quantity, reason)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
+---@param quantity number Non-zero positive or negative number; no default.
+---@param reason? string Optional audit label; defaults to `nil`.
+---@return boolean success `true` when updated; `false` when the character is unavailable or any supplied key/value is invalid.
+
+local ok = Open77.exports.call("bt_core", "addItem", playerId, "Items.Preset_Lexington_Default", 1, "ground_pickup"):await()
+```
+
+## `removeItem`
+
+Removes a quantity when the inventory contains enough items.
+
+**Parameters:** `key` follows the format documented in
+[`server-getItem`](#server-getitem). `quantity` must be positive and is rounded
+down; optional `reason` has no default label.
+
+```lua
+--- Export signature: removeItem(playerId, key, quantity, reason)
+---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
+---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
+---@param quantity number Positive number rounded down; no default.
+---@param reason? string Optional audit label; defaults to `nil`.
+---@return boolean success `true` when removed; `false` for invalid input, unavailable character, or insufficient balance/quantity.
+
+local ok = Open77.exports.call("bt_core", "removeItem", playerId, "Items.Preset_Lexington_Default", 1, "item_used"):await()
+```
+
+## `listItems`
+
+Returns a copy of the persistent inventory.
+
+```lua
+--- Export signature: listItems(playerId)
+---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
+---@return table<string, integer> items Defensive copy; empty when the character is unavailable.
+
+local items = Open77.exports.call("bt_core", "listItems", playerId):await()
+```
