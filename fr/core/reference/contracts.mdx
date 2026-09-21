@@ -1,0 +1,141 @@
+---
+title: "Contrats de données"
+description: "Référence champ par champ des valeurs structurées retournées par les exports bt_core."
+icon: "brackets-curly"
+---
+
+Les pages d'exports décrivent les paramètres d'appel et les cas d'échec. Cette
+page définit la forme des valeurs structurées partagées par plusieurs exports.
+
+## `CharacterSnapshot`
+
+Retourné par `snapshot(playerId)` côté serveur et par `snapshot()` côté client
+après la disponibilité. L'appel serveur construit une vue fraîche du personnage.
+L'appel client retourne l'instantané reçu avec `bt_core:ready` : ce n'est **pas
+un abonnement en direct** aux mutations suivantes du serveur.
+
+<ResponseField name="snapshot" type="CharacterSnapshot | nil">
+  `nil` avant le chargement d'un personnage ou avant l'événement de disponibilité client.
+
+  <Expandable title="Champs de CharacterSnapshot" defaultOpen={true}>
+    <ResponseField name="userId" type="string" required>Identifiant utilisateur Open2077 persistant.</ResponseField>
+    <ResponseField name="characterId" type="string" required>Identifiant de personnage BT CORE persistant.</ResponseField>
+    <ResponseField name="characterKey" type="string" required>Clé persistante de l'emplacement de personnage.</ResponseField>
+    <ResponseField name="firstname" type="string" required>Prénom, potentiellement vide pendant l'onboarding.</ResponseField>
+    <ResponseField name="lastname" type="string" required>Nom, potentiellement vide pendant l'onboarding.</ResponseField>
+    <ResponseField name="dateOfBirth" type="string | nil">Date ISO `YYYY-MM-DD`, ou `nil` tant qu'elle n'est pas renseignée.</ResponseField>
+    <ResponseField name="sex" type="string" required>Valeur stockée ; l'onboarding utilise actuellement `male` ou `female`.</ResponseField>
+    <ResponseField name="lifepath" type="string" required>`corpo`, `streetkid`, `nomad`, ou une valeur vide avant validation.</ResponseField>
+    <ResponseField name="phoneNumber" type="string | nil">Numéro de téléphone unique généré.</ResponseField>
+    <ResponseField name="eddies" type="integer" required>Solde d'espèces courant.</ResponseField>
+    <ResponseField name="bank" type="integer" required>Solde bancaire courant.</ResponseField>
+    <ResponseField name="others" type="object&lt;string, integer&gt;" required>Soldes extensibles indexés par nom de compte assaini.</ResponseField>
+    <ResponseField name="items" type="object&lt;string, integer&gt;" required>Quantités persistantes indexées par nom d'objet assaini.</ResponseField>
+    <ResponseField name="xp" type="integer" required>Total d'expérience non négatif.</ResponseField>
+    <ResponseField name="permissionLevel" type="integer" required>Niveau numérique de permission du personnage.</ResponseField>
+    <ResponseField name="roles" type="string[]" required>Clés libres des rôles de modération attribués.</ResponseField>
+    <ResponseField name="language" type="string" required>Code de langue stocké ; `fr` par défaut.</ResponseField>
+    <ResponseField name="lastCoords" type="Coordinates | nil">Dernière position persistée, ou `nil` avant sauvegarde.</ResponseField>
+    <ResponseField name="playtimeSeconds" type="integer" required>Temps de jeu cumulé au moment de la création de l'instantané serveur.</ResponseField>
+    <ResponseField name="status" type="string" required>Statut persistant ; `active` pour un nouveau personnage.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+```lua
+local player = Open77.exports.call("bt_core", "snapshot", playerId):await()
+if not player then return end
+
+print(("%s %s possède %d eddies"):format(
+    player.firstname,
+    player.lastname,
+    player.eddies
+))
+```
+
+## `Coordinates`
+
+Retourné par `getLastCoords` et imbriqué dans `CharacterSnapshot.lastCoords`.
+
+<ResponseField name="coordinates" type="Coordinates | nil">
+  <Expandable title="Champs de Coordinates">
+    <ResponseField name="x" type="number" required>Coordonnée X dans le monde.</ResponseField>
+    <ResponseField name="y" type="number" required>Coordonnée Y dans le monde.</ResponseField>
+    <ResponseField name="z" type="number" required>Coordonnée Z dans le monde.</ResponseField>
+    <ResponseField name="heading" type="number | nil">Orientation facultative en degrés.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `UIState`
+
+Retourné par l'export client `uiState()`.
+
+<ResponseField name="state" type="UIState" required>
+  <Expandable title="Champs de UIState">
+    <ResponseField name="allowed" type="boolean" required>Indique si disponibilité, spawn et onboarding autorisent actuellement l'interface de jeu.</ResponseField>
+    <ResponseField name="allHidden" type="boolean" required>Indique si un appelant a appliqué le masquage global `hideUI()`.</ResponseField>
+    <ResponseField name="hud" type="boolean" required>Visibilité effective du HUD après toutes les barrières.</ResponseField>
+    <ResponseField name="watermark" type="boolean" required>Visibilité effective du watermark après toutes les barrières.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `JobDefinition`
+
+Chaque valeur du catalogue retourné par `listJobCatalog` suit cette structure
+configurée. La clé de l'objet catalogue est le `jobKey` accepté par les exports.
+
+<ResponseField name="definition" type="JobDefinition" required>
+  <Expandable title="Champs de JobDefinition">
+    <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+    <ResponseField name="category" type="string" required>Catégorie comme `civil`, `law` ou `illegal`.</ResponseField>
+    <ResponseField name="isIllegal" type="boolean | nil">Drapeau facultatif ; absent, il devient `false` lors de la résolution d'un métier détenu.</ResponseField>
+    <ResponseField name="grades" type="object&lt;integer, GradeDefinition&gt;" required>
+      Définitions indexées depuis `0`. Chaque valeur contient `label: string`,
+      `salary: integer` et `salaryAccount: string`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `JobSummary`
+
+Retourné par `getJobs` et `getPrimaryJob`. Il résout une affectation détenue
+avec le catalogue `JobDefinition` courant.
+
+<ResponseField name="job" type="JobSummary" required>
+  <Expandable title="Champs de JobSummary">
+    <ResponseField name="key" type="string" required>Clé configurée du métier.</ResponseField>
+    <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+    <ResponseField name="category" type="string" required>Catégorie configurée, `civil` par défaut.</ResponseField>
+    <ResponseField name="isIllegal" type="boolean" required>Indique si le métier est illégal.</ResponseField>
+    <ResponseField name="grade" type="integer" required>Grade configuré détenu.</ResponseField>
+    <ResponseField name="gradeLabel" type="string" required>Libellé de ce grade.</ResponseField>
+    <ResponseField name="salary" type="integer" required>Salaire configuré, `0` par défaut.</ResponseField>
+    <ResponseField name="salaryAccount" type="string" required>Compte de destination, `bank` par défaut.</ResponseField>
+    <ResponseField name="isPrimary" type="boolean" required>Indique s'il s'agit du métier principal.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `GarageDefinition`
+
+Chaque valeur de l'objet retourné par `listGarages` suit cette structure. La clé
+de l'objet est le `garageKey` accepté par les exports de véhicules.
+
+<ResponseField name="garage" type="GarageDefinition" required>
+  <Expandable title="Champs de GarageDefinition">
+    <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+    <ResponseField name="position" type="Coordinates" required>Position et orientation de spawn du véhicule.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `OwnedVehicle`
+
+Chaque entrée retournée par `listVehicles` suit cette structure.
+
+<ResponseField name="vehicle" type="OwnedVehicle" required>
+  <Expandable title="Champs de OwnedVehicle">
+    <ResponseField name="vehicleUid" type="string" required>Identifiant persistant de propriété.</ResponseField>
+    <ResponseField name="garageKey" type="string" required>Clé de garage configurée.</ResponseField>
+    <ResponseField name="record" type="string" required>Record Open2077 commençant par `Vehicle.`.</ResponseField>
+    <ResponseField name="plate" type="string" required>Plaque d'immatriculation générée.</ResponseField>
+    <ResponseField name="state" type="string" required>`stored` ou `out`.</ResponseField>
+  </Expandable>
+</ResponseField>

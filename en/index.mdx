@@ -1,12 +1,18 @@
 ---
 title: "BT CORE"
-description: "Install and extend the central roleplay foundation for Open2077."
+description: "Install the central framework and discover the resources built around it."
 icon: "house"
 ---
 
-BT CORE is a modular roleplay foundation for [Open2077](https://open2077.net/).
+BT CORE is a modular resource ecosystem for [Open2077](https://open2077.net/).
 The central `bt_core` resource owns character identity, persistent state and
-the shared contracts used by the plugins around it.
+the contracts used by banking, housing, factions, shops, vehicles and the other
+resources documented on this site.
+
+<Warning>
+The current `bt_core 0.8.3` pages are a **preview generated from the development
+candidate**. The corresponding runtime release has not been published yet.
+</Warning>
 
 ## What the core provides
 
@@ -20,21 +26,27 @@ the shared contracts used by the plugins around it.
 - language, last position and playtime;
 - a branded health, armor and stamina HUD.
 
-## Current release
+## Documented version
 
-This documentation describes `bt_core` version `0.8.3` as declared by its
-resource manifest. The core targets Open2077 `>=0.0.1`.
+This preview describes `bt_core` version `0.8.3` as declared by the development
+manifest. The last local publication candidate remains `0.8.2`. The preview
+targets Open2077 `>=0.0.1`.
 
 ## Start here
 
 1. [Install the core](./core/installation).
 2. [Review the server configuration](./core/configuration).
-3. Use the [client exports](./core/reference/client) and server reference to
-   integrate another resource.
-4. Check the [permissions and public limits](./core/events-permissions)
+3. Choose the [client character exports](./core/reference/client),
+   [client HUD exports](./core/reference/client-ui), or the clearly separated
+   server reference.
+4. Use the [data contracts](./core/reference/contracts) to inspect every field
+   returned by snapshots, UI state, jobs and vehicles.
+5. Check the [permissions and public limits](./core/events-permissions)
    before enabling the resource.
+6. Browse the [resource catalog](./resources/catalog) to follow the rest of the
+   ecosystem.
 
 <Note>
-Plugins depend on `bt_core`; install and validate the core before adding any
-BT CORE plugin.
+Only resources with complete, versioned pages are considered installable. A
+catalog entry marked preview or pre-release is not a published package.
 </Note>

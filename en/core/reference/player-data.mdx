@@ -1,0 +1,92 @@
+---
+title: "Server exports — Player data"
+description: "Language, persistent position, playtime and fresh character snapshots."
+icon: "database"
+---
+
+Call these **server exports** with `Open77.exports.call(...):await()`.
+
+## `getLanguage`
+
+Returns the stored language code.
+
+```lua
+local language = Open77.exports.call("bt_core", "getLanguage", playerId):await()
+```
+
+<ResponseField name="language" type="string" required>
+  Stored value, or `fr` when the character is unavailable.
+</ResponseField>
+## `setLanguage`
+
+Stores a free-form language string. New characters use `fr`, but this export
+does not apply a default.
+
+```lua
+local ok = Open77.exports.call("bt_core", "setLanguage", playerId, "en"):await()
+```
+
+<ResponseField name="success" type="boolean" required>`false` unless the character is loaded and `lang` is a string.</ResponseField>
+
+## `getLastCoords`
+
+Returns the last persistent position.
+
+```lua
+local coords = Open77.exports.call("bt_core", "getLastCoords", playerId):await()
+```
+
+<ResponseField name="coords" type="Coordinates | nil">
+  Stored position, or `nil` when unavailable. See the
+  [Coordinates contract](./contracts#coordinates).
+</ResponseField>
+
+## `setLastCoords`
+
+Stores the supplied `x`, `y`, `z` and optional `heading` fields.
+
+<ParamField body="playerId" type="integer" required>Runtime player identifier.</ParamField>
+<ParamField body="coords" type="Coordinates" required>Position copied as supplied; no coordinate default is applied.</ParamField>
+
+```lua
+local ok = Open77.exports.call("bt_core", "setLastCoords", playerId, {
+    x = -1378.0,
+    y = 1270.0,
+    z = 123.0,
+    heading = 90.0,
+}):await()
+```
+
+<ResponseField name="success" type="boolean" required>`false` when the character is unavailable or `coords` is not a table.</ResponseField>
+
+## `getPlaytimeSeconds`
+
+Returns live cumulative playtime.
+
+```lua
+local seconds = Open77.exports.call("bt_core", "getPlaytimeSeconds", playerId):await()
+```
+
+<ResponseField name="seconds" type="integer" required>Live cumulative seconds, or `0` when unavailable.</ResponseField>
+
+## `snapshot`
+
+Builds a fresh serializable view of the loaded character. Jobs, garages,
+vehicles, vitals and HUD state are intentionally outside this object.
+
+<ParamField body="playerId" type="integer" required>Runtime player identifier; the character must be loaded.</ParamField>
+
+```lua
+local player = Open77.exports.call("bt_core", "snapshot", playerId):await()
+if not player then return end
+
+print(("%s has played for %d seconds"):format(
+    player.characterId,
+    player.playtimeSeconds
+))
+```
+
+<ResponseField name="snapshot" type="CharacterSnapshot | nil">
+  Fresh server-side state, or `nil` when the character is not loaded. See the
+  complete [CharacterSnapshot contract](./contracts#charactersnapshot).
+</ResponseField>

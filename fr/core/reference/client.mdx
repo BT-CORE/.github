@@ -1,97 +1,44 @@
 ---
-title: "Exports client"
-description: "Lire l'état du personnage et contrôler le HUD BT CORE depuis une ressource client."
-icon: "display"
+title: "Exports client — État du personnage"
+description: "Vérifier la disponibilité locale et lire l'instantané de personnage reçu par le client."
+icon: "user-check"
 ---
 
-Appeler chaque export client avec `Open77.exports.call(...):await()`.
+Ces exports existent uniquement dans un **script client**. Les appeler avec
+`Open77.exports.call(...):await()` sans `playerId`.
 
 ## `isReady`
 
-Indique si l'instantané du personnage local est prêt.
+Indique si le client local a reçu le payload autoritaire `bt_core:ready` et
+possède actuellement un instantané de personnage.
 
 ```lua
---- Signature : isReady()
----@return boolean ready Vrai lorsque le personnage local est prêt.
 local ready = Open77.exports.call("bt_core", "isReady"):await()
+if not ready then return end
 ```
+
+<ResponseField name="ready" type="boolean" required>
+  `true` après `bt_core:ready` ; repasse à `false` à la fin de la session Open2077.
+</ResponseField>
 
 ## `snapshot`
 
-Retourne le dernier instantané reçu du serveur.
+Retourne les données du personnage capturées à la réception de `bt_core:ready`.
 
 ```lua
---- Signature : snapshot()
----@return table? snapshot Dernier état, ou nil avant la disponibilité.
 local player = Open77.exports.call("bt_core", "snapshot"):await()
+if not player then return end
+
+print(("Bienvenue %s %s"):format(player.firstname, player.lastname))
 ```
 
-## `hideUI`
+<ResponseField name="snapshot" type="CharacterSnapshot | nil">
+  Le dernier instantané de disponibilité, ou `nil` avant celle-ci et après la
+  fin de session. Voir le [contrat CharacterSnapshot](./contracts#charactersnapshot).
+</ResponseField>
 
-Masque toute l'interface de jeu BT CORE. Les barrières de disponibilité et
-d'onboarding restent autoritaires.
-
-```lua
---- Signature : hideUI()
----@return boolean success Toujours vrai.
-local ok = Open77.exports.call("bt_core", "hideUI"):await()
-```
-
-## `showUI`
-
-Libère le masquage global. Cet appel ne peut pas afficher l'interface avant la
-disponibilité du personnage ni pendant un onboarding bloquant.
-
-```lua
---- Signature : showUI()
----@return boolean success Toujours vrai.
-local ok = Open77.exports.call("bt_core", "showUI"):await()
-```
-
-## `hide`
-
-Masque un composant. Les valeurs acceptées sont `hud`, `watermark`, `all` et
-`ui`. `all` et `ui` sont des alias du masquage global.
-
-```lua
---- Signature : hide(component)
----@param component string hud, watermark, all ou ui.
----@return boolean success Faux pour un composant inconnu.
----@return string? errorCode unknown_ui_component en cas de rejet.
-local ok, err = Open77.exports.call("bt_core", "hide", "hud"):await()
-```
-
-## `show`
-
-Affiche un composant lorsque la barrière de jeu l'autorise.
-
-```lua
---- Signature : show(component)
----@param component string hud, watermark, all ou ui.
----@return boolean success Faux pour un composant inconnu.
----@return string? errorCode unknown_ui_component en cas de rejet.
-local ok, err = Open77.exports.call("bt_core", "show", "watermark"):await()
-```
-
-## `isVisible`
-
-Retourne la visibilité effective après les contrôles globaux, l'onboarding et
-l'état de masquage.
-
-```lua
---- Signature : isVisible(component)
----@param component string hud, watermark, all ou ui.
----@return boolean? visible Visibilité effective, ou nil pour une valeur inconnue.
----@return string? errorCode unknown_ui_component en cas de rejet.
-local visible, err = Open77.exports.call("bt_core", "isVisible", "hud"):await()
-```
-
-## `uiState`
-
-Retourne un instantané de tous les drapeaux de visibilité publics.
-
-```lua
---- Signature : uiState()
----@return table state Champs allowed, allHidden, hud et watermark.
-local state = Open77.exports.call("bt_core", "uiState"):await()
-```
+<Warning>
+L'instantané client n'est pas actualisé après chaque mutation serveur. Le traiter
+comme une donnée d'initialisation en lecture seule. Pour une valeur fraîche,
+appeler l'export serveur concerné ou `snapshot(playerId)` depuis un script serveur.
+</Warning>

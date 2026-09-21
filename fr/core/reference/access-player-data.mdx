@@ -1,161 +1,68 @@
 ---
-title: "Exports d'accès et de données joueur"
-description: "Rôles, langue, position, temps de jeu et instantané."
-icon: "code"
+title: "Exports serveur — Contrôle d'accès"
+description: "Lire les niveaux d'accès et gérer les rôles libres des personnages."
+icon: "user-shield"
 ---
 
-Appeler ces exports serveur avec `Open77.exports.call(...):await()`. Sauf indication contraire, le joueur doit posséder un personnage chargé.
+Appeler ces **exports serveur** avec `Open77.exports.call(...):await()`. Le
+personnage doit être chargé pour toute mutation.
 
 ## `getPermissionLevel`
 
-Retourne le niveau numérique de permission du personnage.
+Retourne le niveau numérique de permission enregistré.
 
 ```lua
---- Signature de l'export : getPermissionLevel(playerId)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@return integer permissionLevel Niveau enregistré, ou `0` si le personnage est indisponible.
-
 local level = Open77.exports.call("bt_core", "getPermissionLevel", playerId):await()
 ```
 
+<ResponseField name="permissionLevel" type="integer" required>
+  Niveau enregistré, ou `0` si le personnage est indisponible.
+</ResponseField>
 ## `getRoles`
 
-Retourne les rôles staff du personnage.
+Retourne les clés libres de rôles staff. Considérer la table comme non modifiable.
 
 ```lua
---- Signature de l'export : getRoles(playerId)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@return string[] roles Clés attribuées ; vide si indisponible. Considérer la table retournée comme non modifiable.
-
 local roles = Open77.exports.call("bt_core", "getRoles", playerId):await()
 ```
 
+<ResponseField name="roles" type="string[]" required>
+  Clés attribuées, ou liste vide si le personnage est indisponible.
+</ResponseField>
+
 ## `hasRole`
 
-Indique si le personnage possède un rôle staff.
+Vérifie si une clé de rôle libre est attribuée. Il n'existe aucune liste prédéfinie.
 
-**Paramètres :** `role` est une chaîne libre. Aucune liste de rôles prédéfinie
-ni valeur par défaut n'est imposée.
+<ParamField body="playerId" type="integer" required>Identifiant runtime du joueur.</ParamField>
+<ParamField body="role" type="string" required>Clé exacte du rôle libre.</ParamField>
 
 ```lua
---- Signature de l'export : hasRole(playerId, role)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@param role string Clé libre de rôle staff ; aucune liste prédéfinie ni valeur par défaut.
----@return boolean hasRole `true` si le rôle est attribué ; sinon `false`.
-
 local moderator = Open77.exports.call("bt_core", "hasRole", playerId, "moderator"):await()
 ```
 
+<ResponseField name="hasRole" type="boolean" required>`true` uniquement si la clé est attribuée.</ResponseField>
+
 ## `giveRole`
 
-Attribue un rôle staff au personnage.
-
-**Paramètres :** `role` est une chaîne libre qui ne doit pas déjà être
-attribuée. Aucune liste prédéfinie ni valeur par défaut n'est imposée.
+Attribue un rôle que le personnage ne possède pas encore.
 
 ```lua
---- Signature de l'export : giveRole(playerId, role)
----@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
----@param role string Clé libre de rôle staff qui ne doit pas déjà être attribuée.
----@return boolean success `true` si le rôle est attribué ; `false` s'il est indisponible, invalide ou déjà attribué.
-
 local ok = Open77.exports.call("bt_core", "giveRole", playerId, "moderator"):await()
 ```
 
+<ResponseField name="success" type="boolean" required>
+  `false` si le personnage est indisponible, si le rôle est invalide ou déjà attribué.
+</ResponseField>
+
 ## `removeRole`
 
-Retire un rôle staff du personnage.
-
-**Paramètres :** `role` doit correspondre à un rôle libre déjà attribué.
-Aucune valeur par défaut n'est appliquée.
+Retire un rôle attribué.
 
 ```lua
---- Signature de l'export : removeRole(playerId, role)
----@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
----@param role string Clé libre de rôle staff actuellement attribuée au personnage.
----@return boolean success `true` si le rôle est retiré ; `false` s'il est indisponible ou non attribué.
-
 local ok = Open77.exports.call("bt_core", "removeRole", playerId, "moderator"):await()
 ```
 
-## `getLanguage`
-
-Retourne le code de langue du personnage.
-
-```lua
---- Signature de l'export : getLanguage(playerId)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@return string language Langue enregistrée, ou `fr` si le personnage est indisponible.
-
-local language = Open77.exports.call("bt_core", "getLanguage", playerId):await()
-```
-
-## `setLanguage`
-
-Modifie le code de langue du personnage.
-
-**Paramètres :** `lang` accepte toute chaîne. Les nouveaux personnages
-utilisent `fr` par défaut ; l'export lui-même n'applique aucun repli.
-
-```lua
---- Signature de l'export : setLanguage(playerId, lang)
----@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
----@param lang string Chaîne de langue libre ; les nouveaux personnages utilisent `fr` par défaut.
----@return boolean success `true` pour un personnage chargé et une chaîne ; sinon `false`.
-
-local ok = Open77.exports.call("bt_core", "setLanguage", playerId, "fr"):await()
-```
-
-## `getLastCoords`
-
-Retourne la dernière position persistante connue.
-
-```lua
---- Signature de l'export : getLastCoords(playerId)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@return table? coords Table `{ x, y, z, heading }` enregistrée, ou `nil` si elle est indisponible.
-
-local coords = Open77.exports.call("bt_core", "getLastCoords", playerId):await()
-```
-
-## `setLastCoords`
-
-Modifie la dernière position persistante connue.
-
-**Paramètres :** `coords` est une table dont les champs `x`, `y`, `z` et
-`heading`, facultatif, sont copiés tels quels. Aucune coordonnée par défaut
-n'est appliquée.
-
-```lua
---- Signature de l'export : setLastCoords(playerId, coords)
----@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
----@param coords table Table de position. Les champs `x`, `y`, `z` et `heading` facultatif sont copiés tels quels.
----@return boolean success `true` pour un personnage chargé et une table ; sinon `false`.
-
-local ok = Open77.exports.call("bt_core", "setLastCoords", playerId,
-    { x = -1378.0, y = 1270.0, z = 123.0, heading = 90.0 }):await()
-```
-
-## `getPlaytimeSeconds`
-
-Retourne le temps de jeu cumulé en secondes.
-
-```lua
---- Signature de l'export : getPlaytimeSeconds(playerId)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@return integer seconds Temps de jeu cumulé en direct, ou `0` s'il est indisponible.
-
-local seconds = Open77.exports.call("bt_core", "getPlaytimeSeconds", playerId):await()
-```
-
-## `snapshot`
-
-Retourne une copie sérialisable de toutes les données du personnage chargé.
-
-```lua
---- Signature de l'export : snapshot(playerId)
----@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
----@return table? snapshot État sérialisable du personnage, ou `nil` avant son chargement.
-
-local player = Open77.exports.call("bt_core", "snapshot", playerId):await()
-```
+<ResponseField name="success" type="boolean" required>
+  `false` si le personnage est indisponible ou si le rôle n'est pas attribué.
+</ResponseField>

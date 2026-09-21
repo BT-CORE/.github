@@ -1,0 +1,189 @@
+---
+title: "Data contracts"
+description: "Field-by-field reference for the structured values returned by bt_core exports."
+icon: "brackets-curly"
+---
+
+Export pages describe call parameters and failure cases. This page defines the
+shape of every structured value shared by several exports.
+
+## `CharacterSnapshot`
+
+Returned by server `snapshot(playerId)` and by client `snapshot()` after
+readiness. The server call builds a fresh view of the loaded character. The
+client call returns the snapshot received with `bt_core:ready`; it is **not a
+live subscription** to later server mutations.
+
+<ResponseField name="snapshot" type="CharacterSnapshot | nil">
+  `nil` before a character is loaded or before the client readiness event.
+
+  <Expandable title="CharacterSnapshot fields" defaultOpen={true}>
+    <ResponseField name="userId" type="string" required>
+      Persistent Open2077 user identifier.
+    </ResponseField>
+    <ResponseField name="characterId" type="string" required>
+      Persistent BT CORE character identifier.
+    </ResponseField>
+    <ResponseField name="characterKey" type="string" required>
+      Persistent character-slot key for this user.
+    </ResponseField>
+    <ResponseField name="firstname" type="string" required>
+      Character first name; may be empty during incomplete onboarding.
+    </ResponseField>
+    <ResponseField name="lastname" type="string" required>
+      Character last name; may be empty during incomplete onboarding.
+    </ResponseField>
+    <ResponseField name="dateOfBirth" type="string | nil">
+      ISO `YYYY-MM-DD` date, or `nil` until supplied.
+    </ResponseField>
+    <ResponseField name="sex" type="string" required>
+      Stored sex value. The onboarding currently writes `male` or `female`.
+    </ResponseField>
+    <ResponseField name="lifepath" type="string" required>
+      `corpo`, `streetkid`, `nomad`, or an empty value before completion.
+    </ResponseField>
+    <ResponseField name="phoneNumber" type="string | nil">
+      Unique generated character phone number.
+    </ResponseField>
+    <ResponseField name="eddies" type="integer" required>
+      Current cash balance.
+    </ResponseField>
+    <ResponseField name="bank" type="integer" required>
+      Current bank balance.
+    </ResponseField>
+    <ResponseField name="others" type="object&lt;string, integer&gt;" required>
+      Extensible account/currency balances keyed by their sanitized account name.
+    </ResponseField>
+    <ResponseField name="items" type="object&lt;string, integer&gt;" required>
+      Persistent inventory counters keyed by their sanitized item name.
+    </ResponseField>
+    <ResponseField name="xp" type="integer" required>
+      Non-negative experience total.
+    </ResponseField>
+    <ResponseField name="permissionLevel" type="integer" required>
+      Numeric character permission level.
+    </ResponseField>
+    <ResponseField name="roles" type="string[]" required>
+      Assigned free-form staff role keys.
+    </ResponseField>
+    <ResponseField name="language" type="string" required>
+      Stored language code; new characters default to `fr`.
+    </ResponseField>
+    <ResponseField name="lastCoords" type="Coordinates | nil">
+      Last persisted position, or `nil` before one is saved.
+    </ResponseField>
+    <ResponseField name="playtimeSeconds" type="integer" required>
+      Live cumulative playtime in seconds at the moment the server snapshot is built.
+    </ResponseField>
+    <ResponseField name="status" type="string" required>
+      Persistent character status; new characters use `active`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+```lua
+local player = Open77.exports.call("bt_core", "snapshot", playerId):await()
+if not player then return end
+
+print(("%s %s has %d eddies"):format(
+    player.firstname,
+    player.lastname,
+    player.eddies
+))
+```
+
+## `Coordinates`
+
+Returned by `getLastCoords` and nested in `CharacterSnapshot.lastCoords`.
+
+<ResponseField name="coordinates" type="Coordinates | nil">
+  <Expandable title="Coordinates fields">
+    <ResponseField name="x" type="number" required>World X coordinate.</ResponseField>
+    <ResponseField name="y" type="number" required>World Y coordinate.</ResponseField>
+    <ResponseField name="z" type="number" required>World Z coordinate.</ResponseField>
+    <ResponseField name="heading" type="number | nil">Optional orientation in degrees.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `UIState`
+
+Returned by the client-only `uiState()` export.
+
+<ResponseField name="state" type="UIState" required>
+  <Expandable title="UIState fields">
+    <ResponseField name="allowed" type="boolean" required>
+      Whether readiness, spawning and onboarding currently permit gameplay UI.
+    </ResponseField>
+    <ResponseField name="allHidden" type="boolean" required>
+      Whether a caller has applied the global `hideUI()` override.
+    </ResponseField>
+    <ResponseField name="hud" type="boolean" required>
+      Effective custom HUD visibility after all gates and overrides.
+    </ResponseField>
+    <ResponseField name="watermark" type="boolean" required>
+      Effective watermark visibility after all gates and overrides.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `JobDefinition`
+
+Each value in the catalog returned by `listJobCatalog` has this configured
+shape. The catalog object key is the `jobKey` accepted by job exports.
+
+<ResponseField name="definition" type="JobDefinition" required>
+  <Expandable title="JobDefinition fields">
+    <ResponseField name="label" type="string" required>Display label.</ResponseField>
+    <ResponseField name="category" type="string" required>Domain category such as `civil`, `law`, or `illegal`.</ResponseField>
+    <ResponseField name="isIllegal" type="boolean | nil">Optional illegal-job flag; omitted means `false` when a held job is resolved.</ResponseField>
+    <ResponseField name="grades" type="object&lt;integer, GradeDefinition&gt;" required>
+      Grade definitions indexed from `0`. Each value contains `label: string`,
+      `salary: integer`, and `salaryAccount: string`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `JobSummary`
+
+Returned by `getJobs` and `getPrimaryJob`. It resolves a held assignment
+against the current `JobDefinition` catalog.
+
+<ResponseField name="job" type="JobSummary" required>
+  <Expandable title="JobSummary fields">
+    <ResponseField name="key" type="string" required>Configured job key.</ResponseField>
+    <ResponseField name="label" type="string" required>Display label.</ResponseField>
+    <ResponseField name="category" type="string" required>Configured category; defaults to `civil`.</ResponseField>
+    <ResponseField name="isIllegal" type="boolean" required>Whether the job is marked illegal.</ResponseField>
+    <ResponseField name="grade" type="integer" required>Held configured grade.</ResponseField>
+    <ResponseField name="gradeLabel" type="string" required>Display label for that grade.</ResponseField>
+    <ResponseField name="salary" type="integer" required>Configured salary; defaults to `0`.</ResponseField>
+    <ResponseField name="salaryAccount" type="string" required>Destination account; defaults to `bank`.</ResponseField>
+    <ResponseField name="isPrimary" type="boolean" required>Whether this is the primary held job.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `GarageDefinition`
+
+Each value in the object returned by `listGarages` has this shape. The object
+key is the `garageKey` accepted by vehicle exports.
+
+<ResponseField name="garage" type="GarageDefinition" required>
+  <Expandable title="GarageDefinition fields">
+    <ResponseField name="label" type="string" required>Display label.</ResponseField>
+    <ResponseField name="position" type="Coordinates" required>Vehicle spawn position and heading.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `OwnedVehicle`
+
+Each entry returned by `listVehicles` has this shape.
+
+<ResponseField name="vehicle" type="OwnedVehicle" required>
+  <Expandable title="OwnedVehicle fields">
+    <ResponseField name="vehicleUid" type="string" required>Persistent ownership identifier.</ResponseField>
+    <ResponseField name="garageKey" type="string" required>Configured garage key.</ResponseField>
+    <ResponseField name="record" type="string" required>Open2077 vehicle record beginning with `Vehicle.`.</ResponseField>
+    <ResponseField name="plate" type="string" required>Generated license plate.</ResponseField>
+    <ResponseField name="state" type="string" required>`stored` or `out`.</ResponseField>
+  </Expandable>
+</ResponseField>

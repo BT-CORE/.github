@@ -1,0 +1,57 @@
+---
+title: "Catalogue des ressources"
+description: "Découvrir le core et les ressources BT CORE qui seront documentées ici lorsqu'elles seront publiables."
+icon: "grid-2"
+---
+
+Ce site est le portail documentaire de tout l'écosystème BT CORE, pas seulement
+de `bt_core`. Chaque ressource recevra ses propres pages d'installation, de
+configuration, d'API client et d'API serveur lorsque sa version sera prête.
+
+<Warning>
+Les entrées `Aperçu` et `Prépublication` décrivent des travaux en cours. Leur
+présence dans ce catalogue ne signifie pas qu'une version téléchargeable existe.
+</Warning>
+
+## Fondation
+
+| Ressource | Statut | Rôle |
+| --- | --- | --- |
+| `bt_core` | Aperçu `0.8.3` | Identité, persistance, économie, inventaire, métiers, véhicules et contrats publics partagés. |
+| `bt_lib` | Prépublication | Utilitaires client/serveur partagés pour les entités, vecteurs, WebUI, exports et la disponibilité. |
+
+## Ressources de gameplay
+
+| Ressource | Statut | Rôle |
+| --- | --- | --- |
+| `bt_bank` | Prépublication | Comptes bancaires, dépôts, retraits, virements et distributeurs. |
+| `bt_cardealer` | Prépublication | Catalogues, achats, véhicules de démonstration et essais routiers. |
+| `bt_faction` | Prépublication | Factions, membres, rangs et trésoreries communes. |
+| `bt_housing` | Prépublication | Propriétés achetables, résidents, accès et intérieurs instanciés. |
+| `bt_phone` | Prépublication | Appels, contacts, messages, actualités et portraits joueur. |
+| `bt_shop` | Prépublication | Boutiques configurables avec achats et ventes validés par le serveur. |
+| `bt_taxi` | Prépublication | Courses Delamain, destinations, tarification et conduite. |
+| `bt_traffic` | Prépublication | Trafic ambiant de véhicules et piétons distribué par cellules et instances. |
+
+## Ressources de plateforme et d'interface
+
+| Ressource | Statut | Rôle |
+| --- | --- | --- |
+| `bt_interaction` | Prépublication | Prompts d'interaction dans le monde et choix WebUI cohérents. |
+| `bt_nuiprotect` | Prépublication | Détection heuristique des DevTools WebUI avec réponse configurable. |
+
+<Note>
+Les ressources de test internes sont volontairement exclues. Des ressources
+peuvent être ajoutées, renommées ou retirées avant leur publication : cette liste
+suit la feuille de route réelle, pas le contenu d'un dossier de développement.
+</Note>
+
+## Documentation exigée pour une publication
+
+Chaque ressource publiée doit ajouter à ce portail :
+
+- son objectif, son statut, sa version et les versions de ses dépendances ;
+- son installation, son ordre de chargement, sa configuration et ses migrations ;
+- des références distinctes pour les **exports client** et les **exports serveur** ;
+- les paramètres, retours, structures imbriquées, codes d'erreur et permissions ;
+- des exemples exécutables et les limites connues.

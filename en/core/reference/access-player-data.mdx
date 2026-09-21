@@ -1,160 +1,68 @@
 ---
-title: "Access and player data exports"
-description: "Roles, language, position, playtime and snapshot contracts."
-icon: "code"
+title: "Server exports — Access control"
+description: "Read numeric access levels and manage free-form character roles."
+icon: "user-shield"
 ---
 
-Call these server exports with `Open77.exports.call(...):await()`. Unless a section says otherwise, the player must have a loaded character.
+Call these **server exports** with `Open77.exports.call(...):await()`. The
+character must be loaded for every mutation.
 
 ## `getPermissionLevel`
 
-Returns the character's numeric permission level.
+Returns the stored numeric permission level.
 
 ```lua
---- Export signature: getPermissionLevel(playerId)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@return integer permissionLevel Stored level, or `0` when the character is unavailable.
-
 local level = Open77.exports.call("bt_core", "getPermissionLevel", playerId):await()
 ```
 
+<ResponseField name="permissionLevel" type="integer" required>
+  Stored level, or `0` when the character is unavailable.
+</ResponseField>
 ## `getRoles`
 
-Returns the character's staff roles.
+Returns the assigned free-form staff role keys. Treat the returned table as read-only.
 
 ```lua
---- Export signature: getRoles(playerId)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@return string[] roles Assigned role keys; empty when unavailable. Treat the returned table as read-only.
-
 local roles = Open77.exports.call("bt_core", "getRoles", playerId):await()
 ```
 
+<ResponseField name="roles" type="string[]" required>
+  Assigned keys, or an empty list when the character is unavailable.
+</ResponseField>
+
 ## `hasRole`
 
-Returns whether the character has a staff role.
+Checks whether a free-form role key is assigned. There is no predefined role list.
 
-**Parameters:** `role` is a free string. No predefined role list or default is
-enforced.
+<ParamField body="playerId" type="integer" required>Runtime player identifier.</ParamField>
+<ParamField body="role" type="string" required>Exact free-form role key.</ParamField>
 
 ```lua
---- Export signature: hasRole(playerId, role)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@param role string Free-form staff role key; there is no predefined list or default.
----@return boolean hasRole `true` when the role is assigned; otherwise `false`.
-
 local moderator = Open77.exports.call("bt_core", "hasRole", playerId, "moderator"):await()
 ```
 
+<ResponseField name="hasRole" type="boolean" required>`true` only when the key is assigned.</ResponseField>
+
 ## `giveRole`
 
-Assigns a staff role to the character.
-
-**Parameters:** `role` is a free string and must not already be assigned. No
-predefined role list or default is enforced.
+Assigns a role that the character does not already hold.
 
 ```lua
---- Export signature: giveRole(playerId, role)
----@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
----@param role string Free-form staff role key that is not already assigned.
----@return boolean success `true` when assigned; `false` when unavailable, invalid, or already assigned.
-
 local ok = Open77.exports.call("bt_core", "giveRole", playerId, "moderator"):await()
 ```
 
+<ResponseField name="success" type="boolean" required>
+  `false` when the character is unavailable, the role is invalid, or it is already assigned.
+</ResponseField>
+
 ## `removeRole`
 
-Removes a staff role from the character.
-
-**Parameters:** `role` must match an assigned free-form role. No default is
-applied.
+Removes an assigned role.
 
 ```lua
---- Export signature: removeRole(playerId, role)
----@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
----@param role string Free-form staff role key currently assigned to the character.
----@return boolean success `true` when removed; `false` when unavailable or not assigned.
-
 local ok = Open77.exports.call("bt_core", "removeRole", playerId, "moderator"):await()
 ```
 
-## `getLanguage`
-
-Returns the character's language code.
-
-```lua
---- Export signature: getLanguage(playerId)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@return string language Stored language, or `fr` when the character is unavailable.
-
-local language = Open77.exports.call("bt_core", "getLanguage", playerId):await()
-```
-
-## `setLanguage`
-
-Updates the character's language code.
-
-**Parameters:** `lang` accepts any string. New characters use `fr` by default;
-the export itself applies no fallback.
-
-```lua
---- Export signature: setLanguage(playerId, lang)
----@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
----@param lang string Free-form language string; new characters default to `fr`.
----@return boolean success `true` for a loaded character and string value; otherwise `false`.
-
-local ok = Open77.exports.call("bt_core", "setLanguage", playerId, "fr"):await()
-```
-
-## `getLastCoords`
-
-Returns the last known persistent position.
-
-```lua
---- Export signature: getLastCoords(playerId)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@return table? coords Stored `{ x, y, z, heading }` table, or `nil` when unavailable.
-
-local coords = Open77.exports.call("bt_core", "getLastCoords", playerId):await()
-```
-
-## `setLastCoords`
-
-Updates the last known persistent position.
-
-**Parameters:** `coords` is a table whose `x`, `y`, `z`, and optional `heading`
-fields are copied as supplied. No coordinate default is applied.
-
-```lua
---- Export signature: setLastCoords(playerId, coords)
----@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
----@param coords table Position table. Fields `x`, `y`, `z`, and optional `heading` are copied as supplied.
----@return boolean success `true` for a loaded character and table value; otherwise `false`.
-
-local ok = Open77.exports.call("bt_core", "setLastCoords", playerId,
-    { x = -1378.0, y = 1270.0, z = 123.0, heading = 90.0 }):await()
-```
-
-## `getPlaytimeSeconds`
-
-Returns cumulative playtime in seconds.
-
-```lua
---- Export signature: getPlaytimeSeconds(playerId)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@return integer seconds Live cumulative playtime, or `0` when unavailable.
-
-local seconds = Open77.exports.call("bt_core", "getPlaytimeSeconds", playerId):await()
-```
-
-## `snapshot`
-
-Returns a serializable copy of all loaded character data.
-
-```lua
---- Export signature: snapshot(playerId)
----@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
----@return table? snapshot Serializable character state, or `nil` before the character is loaded.
-
-local player = Open77.exports.call("bt_core", "snapshot", playerId):await()
-```
+<ResponseField name="success" type="boolean" required>
+  `false` when the character is unavailable or the role is not assigned.
+</ResponseField>

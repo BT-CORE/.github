@@ -7,29 +7,50 @@
     "light": "#FFE27A",
     "dark": "#A87900"
   },
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
   "navigation": {
     "languages": [
       {
         "language": "en",
         "groups": [
           {
-            "group": "Get started",
+            "group": "BT CORE ecosystem",
             "pages": [
               "en/index",
-              "en/core/installation",
-              "en/core/configuration"
+              "en/resources/catalog"
             ]
           },
           {
-            "group": "Core reference",
+            "group": "bt_core",
+            "tag": "PREVIEW",
             "pages": [
-              "en/core/reference/client",
-              "en/core/reference/identity",
-              "en/core/reference/economy",
-              "en/core/reference/inventory",
-              "en/core/reference/jobs",
-              "en/core/reference/progression-vehicles",
-              "en/core/reference/access-player-data",
+              "en/core/installation",
+              "en/core/configuration",
+              {
+                "group": "Client exports",
+                "icon": "display",
+                "pages": [
+                  "en/core/reference/client",
+                  "en/core/reference/client-ui"
+                ]
+              },
+              {
+                "group": "Server exports",
+                "icon": "server",
+                "pages": [
+                  "en/core/reference/identity",
+                  "en/core/reference/economy",
+                  "en/core/reference/inventory",
+                  "en/core/reference/jobs",
+                  "en/core/reference/progression-vehicles",
+                  "en/core/reference/vehicles",
+                  "en/core/reference/access-player-data",
+                  "en/core/reference/player-data"
+                ]
+              },
+              "en/core/reference/contracts",
               "en/core/events-permissions"
             ]
           }
@@ -39,23 +60,41 @@
         "language": "fr",
         "groups": [
           {
-            "group": "Bien démarrer",
+            "group": "Écosystème BT CORE",
             "pages": [
               "fr/index",
-              "fr/core/installation",
-              "fr/core/configuration"
+              "fr/resources/catalog"
             ]
           },
           {
-            "group": "Référence du core",
+            "group": "bt_core",
+            "tag": "APERÇU",
             "pages": [
-              "fr/core/reference/client",
-              "fr/core/reference/identity",
-              "fr/core/reference/economy",
-              "fr/core/reference/inventory",
-              "fr/core/reference/jobs",
-              "fr/core/reference/progression-vehicles",
-              "fr/core/reference/access-player-data",
+              "fr/core/installation",
+              "fr/core/configuration",
+              {
+                "group": "Exports client",
+                "icon": "display",
+                "pages": [
+                  "fr/core/reference/client",
+                  "fr/core/reference/client-ui"
+                ]
+              },
+              {
+                "group": "Exports serveur",
+                "icon": "server",
+                "pages": [
+                  "fr/core/reference/identity",
+                  "fr/core/reference/economy",
+                  "fr/core/reference/inventory",
+                  "fr/core/reference/jobs",
+                  "fr/core/reference/progression-vehicles",
+                  "fr/core/reference/vehicles",
+                  "fr/core/reference/access-player-data",
+                  "fr/core/reference/player-data"
+                ]
+              },
+              "fr/core/reference/contracts",
               "fr/core/events-permissions"
             ]
           }

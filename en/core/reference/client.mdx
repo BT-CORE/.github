@@ -1,97 +1,44 @@
 ---
-title: "Client exports"
-description: "Read character readiness and control the BT CORE HUD from client resources."
-icon: "display"
+title: "Client exports — Character state"
+description: "Check local readiness and read the character snapshot received by the client."
+icon: "user-check"
 ---
 
-Call every client export through `Open77.exports.call(...):await()`.
+These exports exist only in a **client script**. Call them through
+`Open77.exports.call(...):await()` without a `playerId`.
 
 ## `isReady`
 
-Returns whether the local character snapshot is ready.
+Returns whether the local client received the authoritative `bt_core:ready`
+payload and currently owns a character snapshot.
 
 ```lua
---- Export signature: isReady()
----@return boolean ready True when the local character is ready.
 local ready = Open77.exports.call("bt_core", "isReady"):await()
+if not ready then return end
 ```
+
+<ResponseField name="ready" type="boolean" required>
+  `true` after `bt_core:ready`; reset to `false` when the Open2077 session ends.
+</ResponseField>
 
 ## `snapshot`
 
-Returns the latest character snapshot received from the server.
+Returns the character payload captured when `bt_core:ready` was received.
 
 ```lua
---- Export signature: snapshot()
----@return table? snapshot Latest snapshot, or nil before readiness.
 local player = Open77.exports.call("bt_core", "snapshot"):await()
+if not player then return end
+
+print(("Welcome %s %s"):format(player.firstname, player.lastname))
 ```
 
-## `hideUI`
+<ResponseField name="snapshot" type="CharacterSnapshot | nil">
+  The last readiness snapshot, or `nil` before readiness and after session end.
+  See the complete [CharacterSnapshot contract](./contracts#charactersnapshot).
+</ResponseField>
 
-Hides the complete BT CORE gameplay UI. The readiness and onboarding gates
-still remain authoritative.
-
-```lua
---- Export signature: hideUI()
----@return boolean success Always true.
-local ok = Open77.exports.call("bt_core", "hideUI"):await()
-```
-
-## `showUI`
-
-Releases the global hide request. It cannot display the UI before the character
-is ready or while onboarding blocks gameplay UI.
-
-```lua
---- Export signature: showUI()
----@return boolean success Always true.
-local ok = Open77.exports.call("bt_core", "showUI"):await()
-```
-
-## `hide`
-
-Hides one UI component. Accepted values are `hud`, `watermark`, `all`, and
-`ui`; `all` and `ui` are aliases for the global hide request.
-
-```lua
---- Export signature: hide(component)
----@param component string hud, watermark, all, or ui.
----@return boolean success False for an unknown component.
----@return string? errorCode unknown_ui_component when rejected.
-local ok, err = Open77.exports.call("bt_core", "hide", "hud"):await()
-```
-
-## `show`
-
-Shows one UI component when the gameplay gate allows it.
-
-```lua
---- Export signature: show(component)
----@param component string hud, watermark, all, or ui.
----@return boolean success False for an unknown component.
----@return string? errorCode unknown_ui_component when rejected.
-local ok, err = Open77.exports.call("bt_core", "show", "watermark"):await()
-```
-
-## `isVisible`
-
-Returns the effective visibility of a component after global readiness,
-onboarding and hide-state checks.
-
-```lua
---- Export signature: isVisible(component)
----@param component string hud, watermark, all, or ui.
----@return boolean? visible Effective visibility, or nil for an unknown component.
----@return string? errorCode unknown_ui_component when rejected.
-local visible, err = Open77.exports.call("bt_core", "isVisible", "hud"):await()
-```
-
-## `uiState`
-
-Returns a snapshot of every public visibility flag.
-
-```lua
---- Export signature: uiState()
----@return table state Fields: allowed, allHidden, hud, and watermark.
-local state = Open77.exports.call("bt_core", "uiState"):await()
-```
+<Warning>
+The client snapshot is not updated after every server mutation. Treat it as
+read-only bootstrap data. For a fresh value, call the relevant server export or
+the server `snapshot(playerId)` export from a server script.
+</Warning>

@@ -1,5 +1,5 @@
 ---
-title: "Exports de métiers"
+title: "Exports serveur — Métiers"
 description: "Catalogue, affectations, grades et métier principal."
 icon: "code"
 ---
@@ -20,6 +20,11 @@ Retourne une copie du catalogue des métiers configurés.
 local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
 ```
 
+<ResponseField name="catalog" type="object&lt;string, JobDefinition&gt;" required>
+  Copie défensive indexée par `jobKey`, vide si aucun métier n'est configuré.
+  Voir le [contrat JobDefinition](./contracts#jobdefinition).
+</ResponseField>
+
 ## `getJobs`
 
 Retourne tous les métiers du personnage avec leurs grades résolus.
@@ -32,6 +37,11 @@ Retourne tous les métiers du personnage avec leurs grades résolus.
 local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
 ```
 
+<ResponseField name="jobs" type="JobSummary[]" required>
+  Métiers détenus résolus, ou liste vide si le personnage est indisponible.
+  Voir le [contrat JobSummary](./contracts#jobsummary).
+</ResponseField>
+
 ## `getPrimaryJob`
 
 Retourne le métier principal ou le métier `unemployed` par défaut.
@@ -43,6 +53,11 @@ Retourne le métier principal ou le métier `unemployed` par défaut.
 
 local job = Open77.exports.call("bt_core", "getPrimaryJob", playerId):await()
 ```
+
+<ResponseField name="job" type="JobSummary" required>
+  Métier principal, ou repli non persisté `unemployed` grade `0`. Voir le
+  [contrat JobSummary](./contracts#jobsummary).
+</ResponseField>
 
 ## `hasJob`
 

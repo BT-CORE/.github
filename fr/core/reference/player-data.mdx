@@ -1,0 +1,92 @@
+---
+title: "Exports serveur — Données joueur"
+description: "Langue, position persistante, temps de jeu et instantané frais du personnage."
+icon: "database"
+---
+
+Appeler ces **exports serveur** avec `Open77.exports.call(...):await()`.
+
+## `getLanguage`
+
+Retourne le code de langue enregistré.
+
+```lua
+local language = Open77.exports.call("bt_core", "getLanguage", playerId):await()
+```
+
+<ResponseField name="language" type="string" required>
+  Valeur enregistrée, ou `fr` si le personnage est indisponible.
+</ResponseField>
+## `setLanguage`
+
+Enregistre une chaîne de langue libre. Les nouveaux personnages utilisent `fr`,
+mais cet export n'applique aucune valeur par défaut.
+
+```lua
+local ok = Open77.exports.call("bt_core", "setLanguage", playerId, "fr"):await()
+```
+
+<ResponseField name="success" type="boolean" required>`false` sauf si le personnage est chargé et `lang` est une chaîne.</ResponseField>
+
+## `getLastCoords`
+
+Retourne la dernière position persistante.
+
+```lua
+local coords = Open77.exports.call("bt_core", "getLastCoords", playerId):await()
+```
+
+<ResponseField name="coords" type="Coordinates | nil">
+  Position enregistrée, ou `nil` si elle est indisponible. Voir le
+  [contrat Coordinates](./contracts#coordinates).
+</ResponseField>
+
+## `setLastCoords`
+
+Enregistre les champs `x`, `y`, `z` et `heading` facultatif fournis.
+
+<ParamField body="playerId" type="integer" required>Identifiant runtime du joueur.</ParamField>
+<ParamField body="coords" type="Coordinates" required>Position copiée telle quelle ; aucune coordonnée par défaut.</ParamField>
+
+```lua
+local ok = Open77.exports.call("bt_core", "setLastCoords", playerId, {
+    x = -1378.0,
+    y = 1270.0,
+    z = 123.0,
+    heading = 90.0,
+}):await()
+```
+
+<ResponseField name="success" type="boolean" required>`false` si le personnage est indisponible ou si `coords` n'est pas une table.</ResponseField>
+
+## `getPlaytimeSeconds`
+
+Retourne le temps de jeu cumulé en direct.
+
+```lua
+local seconds = Open77.exports.call("bt_core", "getPlaytimeSeconds", playerId):await()
+```
+
+<ResponseField name="seconds" type="integer" required>Secondes cumulées en direct, ou `0` si indisponible.</ResponseField>
+
+## `snapshot`
+
+Construit une vue sérialisable fraîche du personnage chargé. Les métiers,
+garages, véhicules, constantes vitales et l'état du HUD sont volontairement absents.
+
+<ParamField body="playerId" type="integer" required>Identifiant runtime ; le personnage doit être chargé.</ParamField>
+
+```lua
+local player = Open77.exports.call("bt_core", "snapshot", playerId):await()
+if not player then return end
+
+print(("%s a joué pendant %d secondes"):format(
+    player.characterId,
+    player.playtimeSeconds
+))
+```
+
+<ResponseField name="snapshot" type="CharacterSnapshot | nil">
+  État serveur frais, ou `nil` si le personnage n'est pas chargé. Voir le
+  [contrat CharacterSnapshot complet](./contracts#charactersnapshot).
+</ResponseField>

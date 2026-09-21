@@ -2,6 +2,13 @@
 
 > ## "Roleplay deserves better than an endless succession of promises, paywalls, and recycled scripts."
 
+## Documentation
+
+### [Open the official BT CORE documentation →](https://botilus.mintlify.io/en)
+
+Installation, configuration, client/server exports, complete return contracts
+and the evolving resource catalog are maintained on Mintlify.
+
 ## Contents
 
 - [English](#english)

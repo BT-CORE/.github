@@ -1,24 +1,51 @@
 ---
 title: "Install bt_core"
-description: "Configure MariaDB, load the central resource and verify startup."
+description: "Load bt_core and choose one explicit MariaDB connection method."
 icon: "download"
 ---
+
+<Warning>
+This page documents the `0.8.3` development candidate. Its runtime release has
+not been published yet. Do not combine these instructions with the older
+`0.8.2` package without checking that version's manifest.
+</Warning>
 
 ## Requirements
 
 - an Open2077 server compatible with `open77_version ">=0.0.1"`;
-- a MariaDB database reachable by the server;
-- permission to edit `server.jsonc` and the server environment.
+- a MariaDB database reachable from the dedicated-server process;
+- permission to edit `server.jsonc` and restart the complete server.
 
-`bt_core` has no dependency on another BT CORE plugin.
+`bt_core` has no dependency on another BT CORE resource.
 
-## Install the resource
+## 1. Load the resource
 
-1. Place the release in `resources/bt_core/`.
-2. Add `bt_core` to `resources.load` in `server.jsonc`.
-3. Configure the Open2077 database bridge.
+Place the release at `resources/bt_core/`, then add `bt_core` to the existing
+`resources.load` list. Merge this entry; do not replace the rest of your file.
 
-```json
+```jsonc
+{
+  "resources": {
+    "enabled": true,
+    "root": "resources",
+    "load": [
+      "open77_*",
+      "bt_core"
+    ]
+  }
+}
+```
+
+## 2. Choose one database connection method
+
+`connectionString` and `connectionStringEnvironmentVariable` are **two ways to
+supply the same connection**, not two connection strings to fill in.
+
+### Option A — Environment variable (recommended)
+
+Keep the password outside `server.jsonc`:
+
+```jsonc
 {
   "database": {
     "enabled": true,
@@ -29,44 +56,89 @@ icon: "download"
 }
 ```
 
-4. Set `OP77_DATABASE_CONNECTION` in the server environment. For example:
+`connectionStringEnvironmentVariable` contains the **name of the variable**,
+not the MariaDB password or connection string. Define that variable before
+launching the dedicated server.
 
-```text
-Server=localhost;Port=3307;Database=open77rp;User Id=bt_core;Password=replace-me;
+<Tabs>
+  <Tab title="Windows PowerShell">
+    ```powershell
+    $env:OP77_DATABASE_CONNECTION = 'Server=127.0.0.1;Port=3306;Database=open77rp;User ID=bt_core;Password=REPLACE_WITH_A_UNIQUE_PASSWORD;'
+    # Launch the Open2077 dedicated server from this PowerShell session.
+    ```
+
+    This value lasts for the current PowerShell process and its child processes.
+    In production, configure the secret for the account or service that launches
+    Open2077.
+  </Tab>
+  <Tab title="Linux">
+    ```bash
+    export OP77_DATABASE_CONNECTION='Server=127.0.0.1;Port=3306;Database=open77rp;User ID=bt_core;Password=REPLACE_WITH_A_UNIQUE_PASSWORD;'
+    # Launch the Open2077 dedicated server from this shell.
+    ```
+
+    In production, use the protected secret mechanism provided by systemd,
+    your container runtime or your hosting panel.
+  </Tab>
+</Tabs>
+
+### Option B — Direct value in `server.jsonc`
+
+Use this only if your host cannot inject an environment variable:
+
+```jsonc
+{
+  "database": {
+    "enabled": true,
+    "connectionString": "Server=127.0.0.1;Port=3306;Database=open77rp;User ID=bt_core;Password=REPLACE_WITH_A_UNIQUE_PASSWORD;",
+    "maxRows": 10000
+  }
+}
 ```
 
-5. Create the `open77rp` database if it does not exist.
-6. Start the server and confirm that `bt_core` reaches its ready state.
-
 <Warning>
-Never commit a database password. Use a dedicated MariaDB account with only
-the permissions required by this resource.
+This method stores the database credential in clear text. Do not commit
+`server.jsonc`; restrict file access to the server operator and service account.
 </Warning>
 
-## Database behavior
+## Which value wins?
 
-`server/db.lua` creates and migrates the following tables automatically:
+The Open2077 database bridge resolves configuration in this order:
+
+1. a nonblank `database.connectionString`;
+2. otherwise, the value of the environment variable named by
+   `database.connectionStringEnvironmentVariable`;
+3. startup validation fails when `database.enabled` is `true` and neither
+   source contains a connection string.
+
+The default environment-variable name is `OP77_DATABASE_CONNECTION`. The
+connection value must use the semicolon-separated **MySqlConnector** format
+shown above, not a `mysql://` URL and not a FiveM `set mysql_connection_string`
+directive.
+
+<Note>
+Restart the complete dedicated server after changing database configuration.
+Reloading only `bt_core` does not recreate the server-wide database bridge.
+</Note>
+
+## 3. Prepare and verify MariaDB
+
+1. Create the `open77rp` database if it does not exist.
+2. Create a dedicated MariaDB account with only the required rights on that database.
+3. Start the Open2077 dedicated server.
+4. Confirm that the database bridge connects and `bt_core` reaches its ready state.
+5. Complete onboarding with a test character, reconnect and verify persistence.
+
+`server/db.lua` automatically creates or migrates:
 
 - `bt_core_characters`;
 - `bt_core_ledger`;
 - `bt_core_character_jobs`;
 - `bt_core_vehicles`.
 
-`sql/001_bt_core.sql` is a readable reference. Do not execute it on every
-startup. Migrations are designed to remain idempotent.
-
-## Verify the installation
-
-Confirm all of the following before installing plugins:
-
-- the database connection succeeds;
-- schema creation or migration completes without error;
-- the resource prints its ready message;
-- a player can complete onboarding and reach the configured spawn;
-- reconnecting restores the character and persistent state;
-- the HUD appears only after the character is ready.
+`sql/001_bt_core.sql` is a readable reference; do not run it on every startup.
 
 ## Load order
 
-Load `bt_core` before every resource that calls one of its exports. Keep plugin
-load order aligned with each plugin's dependency page.
+Load `bt_core` before every resource that calls its exports. Add each future BT
+CORE resource after its declared dependencies.

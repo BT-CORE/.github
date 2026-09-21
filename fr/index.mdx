@@ -1,13 +1,20 @@
 ---
 title: "BT CORE"
-description: "Installer et étendre le socle roleplay central pour Open2077."
+description: "Installer le socle central et découvrir les ressources construites autour."
 icon: "house"
 ---
 
-BT CORE est un socle roleplay modulaire pour
+BT CORE est un écosystème de ressources modulaires pour
 [Open2077](https://open2077.net/). La ressource centrale `bt_core` possède
-l'identité des personnages, l'état persistant et les contrats partagés par les
-plugins qui l'entourent.
+l'identité des personnages, l'état persistant et les contrats utilisés par la
+banque, les logements, les factions, les boutiques, les véhicules et les autres
+ressources documentées sur ce site.
+
+<Warning>
+Les pages actuelles de `bt_core 0.8.3` constituent un **aperçu généré depuis le
+candidat de développement**. La version runtime correspondante n'est pas encore
+publiée.
+</Warning>
 
 ## Ce que fournit le core
 
@@ -21,21 +28,28 @@ plugins qui l'entourent.
 - langue, dernière position et temps de jeu ;
 - HUD de marque pour la santé, l'armure et l'endurance.
 
-## Version actuelle
+## Version documentée
 
-Cette documentation décrit `bt_core` version `0.8.3`, telle que déclarée dans
-son manifeste. Le core cible Open2077 `>=0.0.1`.
+Cet aperçu décrit `bt_core` version `0.8.3`, telle que déclarée dans le manifeste
+de développement. Le dernier candidat de publication local reste en `0.8.2`.
+L'aperçu cible Open2077 `>=0.0.1`.
 
 ## Commencer
 
 1. [Installer le core](./core/installation).
 2. [Vérifier sa configuration serveur](./core/configuration).
-3. Utiliser les [exports client](./core/reference/client) et la référence
-   serveur pour intégrer une autre ressource.
-4. Lire les [permissions et limites publiques](./core/events-permissions)
+3. Choisir les [exports client du personnage](./core/reference/client), les
+   [exports client du HUD](./core/reference/client-ui) ou la référence serveur
+   clairement séparée.
+4. Consulter les [contrats de données](./core/reference/contracts) pour chaque
+   champ retourné par les snapshots, l'état UI, les métiers et les véhicules.
+5. Lire les [permissions et limites publiques](./core/events-permissions)
    avant d'activer la ressource.
+6. Parcourir le [catalogue des ressources](./resources/catalog) pour suivre le
+   reste de l'écosystème.
 
 <Note>
-Les plugins dépendent de `bt_core`. Installer et valider le core avant
-d'ajouter un plugin BT CORE.
+Seules les ressources disposant de pages complètes et versionnées sont
+considérées comme installables. Une entrée marquée aperçu ou prépublication
+n'est pas un paquet publié.
 </Note>

@@ -1,0 +1,57 @@
+---
+title: "Resource catalog"
+description: "Discover the core and the BT CORE resources that will be documented here as they become publishable."
+icon: "grid-2"
+---
+
+This site is the documentation portal for the complete BT CORE ecosystem, not
+only for `bt_core`. Each resource receives its own installation, configuration,
+client API and server API pages when its release is ready.
+
+<Warning>
+`Preview` and `pre-release` entries describe work in progress. Their presence in
+this catalog is not a promise that a downloadable release already exists.
+</Warning>
+
+## Foundation
+
+| Resource | Status | Purpose |
+| --- | --- | --- |
+| `bt_core` | Preview `0.8.3` | Character identity, persistence, economy, inventory, jobs, vehicles and the shared public contracts. |
+| `bt_lib` | Pre-release | Shared client/server helpers for entities, vectors, WebUI, exports and readiness. |
+
+## Gameplay resources
+
+| Resource | Status | Purpose |
+| --- | --- | --- |
+| `bt_bank` | Pre-release | Bank accounts, deposits, withdrawals, transfers and ATMs. |
+| `bt_cardealer` | Pre-release | Dealership catalogs, purchases, demonstration vehicles and test drives. |
+| `bt_faction` | Pre-release | Factions, members, ranks and shared treasuries. |
+| `bt_housing` | Pre-release | Purchasable properties, residents, access and instanced interiors. |
+| `bt_phone` | Pre-release | Calls, contacts, messages, news and player portraits. |
+| `bt_shop` | Pre-release | Configurable item stores with server-authoritative purchases and sales. |
+| `bt_taxi` | Pre-release | Delamain taxi requests, destinations, pricing and driving. |
+| `bt_traffic` | Pre-release | Ambient vehicle and pedestrian traffic distributed by cells and instances. |
+
+## Platform and interface resources
+
+| Resource | Status | Purpose |
+| --- | --- | --- |
+| `bt_interaction` | Pre-release | World interaction prompts and consistent WebUI choices. |
+| `bt_nuiprotect` | Pre-release | Heuristic WebUI developer-tools detection with configurable enforcement. |
+
+<Note>
+Internal test resources are intentionally excluded. Resources can be added,
+renamed or removed before release; this list follows the actual publication
+roadmap rather than the contents of a development folder.
+</Note>
+
+## Documentation required for a release
+
+Every published resource must add all of the following to this portal:
+
+- purpose, status, version and dependency versions;
+- installation, load order, configuration and migration steps;
+- separate **client exports** and **server exports** references;
+- parameters, return values, nested data structures, failure codes and permissions;
+- executable examples and known limitations.

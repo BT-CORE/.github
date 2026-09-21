@@ -1,5 +1,5 @@
 ---
-title: "Job exports"
+title: "Server exports — Jobs"
 description: "Job catalog, assignment, grades and primary-job contracts."
 icon: "code"
 ---
@@ -20,6 +20,11 @@ Returns a copy of the configured job catalog.
 local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
 ```
 
+<ResponseField name="catalog" type="object&lt;string, JobDefinition&gt;" required>
+  Defensive copy keyed by `jobKey`; empty when no jobs are configured. See the
+  complete [JobDefinition contract](./contracts#jobdefinition).
+</ResponseField>
+
 ## `getJobs`
 
 Returns every character job with its resolved grade.
@@ -32,6 +37,11 @@ Returns every character job with its resolved grade.
 local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
 ```
 
+<ResponseField name="jobs" type="JobSummary[]" required>
+  Resolved held jobs; empty when the character is unavailable. See the
+  [JobSummary contract](./contracts#jobsummary).
+</ResponseField>
+
 ## `getPrimaryJob`
 
 Returns the primary job or the default `unemployed` job.
@@ -43,6 +53,11 @@ Returns the primary job or the default `unemployed` job.
 
 local job = Open77.exports.call("bt_core", "getPrimaryJob", playerId):await()
 ```
+
+<ResponseField name="job" type="JobSummary" required>
+  Primary held job, or the non-persisted `unemployed` grade `0` fallback. See
+  the [JobSummary contract](./contracts#jobsummary).
+</ResponseField>
 
 ## `hasJob`
 

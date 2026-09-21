@@ -1,0 +1,85 @@
+---
+title: "Server exports — Vehicles"
+description: "List garages and own, spawn or store persistent vehicles."
+icon: "car"
+---
+
+Call these **server exports** with `Open77.exports.call(...):await()`. Except for
+`listGarages`, the character must be loaded.
+
+## `listGarages`
+
+Returns a defensive copy of configured garages.
+
+```lua
+local garages = Open77.exports.call("bt_core", "listGarages"):await()
+```
+
+<ResponseField name="garages" type="object&lt;string, GarageDefinition&gt;" required>
+  Catalog keyed by `garageKey`; `default` is shipped. See the
+  [GarageDefinition contract](./contracts#garagedefinition).
+</ResponseField>
+
+## `listVehicles`
+
+Returns the character's owned vehicles. Omit `garageKey` for every garage.
+
+<ParamField body="playerId" type="integer" required>Runtime player identifier.</ParamField>
+<ParamField body="garageKey" type="string">Optional configured garage key.</ParamField>
+
+```lua
+local vehicles = Open77.exports.call("bt_core", "listVehicles", playerId, "default"):await()
+```
+
+<ResponseField name="vehicles" type="OwnedVehicle[]" required>
+  Matching vehicles, or an empty list when none exist or the character is not
+  loaded. See the [OwnedVehicle contract](./contracts#ownedvehicle).
+</ResponseField>
+
+## `giveVehicle`
+
+Creates a persistent ownership record in the stored state.
+
+<ParamField body="playerId" type="integer" required>Runtime player identifier.</ParamField>
+<ParamField body="record" type="string" required>Open2077 record starting with `Vehicle.`, at most 96 characters.</ParamField>
+<ParamField body="opts" type="object">Optional table. `garageKey` defaults to `default`; an unknown key also falls back to `default`.</ParamField>
+
+```lua
+local vehicleUid, plateOrError = Open77.exports.call(
+    "bt_core",
+    "giveVehicle",
+    playerId,
+    "Vehicle.v_standard2_thorton_galena_player",
+    { garageKey = "default" }
+):await()
+```
+
+<ResponseField name="vehicleUid" type="string | nil">Persistent identifier on success; otherwise `nil`.</ResponseField>
+<ResponseField name="plateOrError" type="string" required>Generated plate on success; otherwise `not_ready`, `invalid_record`, or `database_error`.</ResponseField>
+
+## `spawnVehicle`
+
+Spawns a stored vehicle at its configured garage point.
+
+```lua
+local vehicleId, errorCode = Open77.exports.call(
+    "bt_core", "spawnVehicle", playerId, vehicleUid
+):await()
+```
+
+<ResponseField name="vehicleId" type="integer | nil">Runtime Open2077 identifier on success.</ResponseField>
+<ResponseField name="errorCode" type="string | nil">`not_ready`, `not_owner`, `not_stored`, `database_error`, or a platform creation error.</ResponseField>
+
+## `storeVehicle`
+
+Captures the live vehicle state, persists it and removes the runtime vehicle.
+The server resolves the runtime vehicle identifier internally.
+
+```lua
+local ok, errorCode = Open77.exports.call(
+    "bt_core", "storeVehicle", playerId, vehicleUid
+):await()
+```
+
+<ResponseField name="success" type="boolean" required>True only when persistence and platform removal both succeed.</ResponseField>
+<ResponseField name="errorCode" type="string | nil">`not_ready`, `invalid_vehicle_uid`, `not_owner`, `not_out`, `vehicle_unavailable`, `database_error`, `remove_failed`, or a platform removal error.</ResponseField>
