@@ -64,6 +64,10 @@
     ]
   },
   "banner": {
-    "content": "Roleplay deserves better than an endless succession of promises, paywalls, and recycled scripts.\""
+    "content": "Roleplay deserves better than an endless succession of promises, paywalls, and recycled scripts.",
+    "color": {
+      "light": "#E9C50F",
+      "dark": "#151414"
+    }
   }
 }
