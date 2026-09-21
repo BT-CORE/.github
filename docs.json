@@ -62,5 +62,8 @@
         ]
       }
     ]
+  },
+  "banner": {
+    "content": "Roleplay deserves better than an endless succession of promises, paywalls, and recycled scripts.\""
   }
 }
