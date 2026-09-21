@@ -1,5 +1,5 @@
 ---
-title: "Exports client — HUD"
+title: "HUD"
 description: "Masquer, afficher et inspecter l'état effectif de l'interface de jeu BT CORE."
 icon: "display"
 ---
@@ -87,5 +87,12 @@ end
 ```
 
 <ResponseField name="state" type="UIState" required>
-  Voir le [contrat UIState](./contracts#uistate).
+  Barrières courantes et visibilité effective des composants.
 </ResponseField>
+
+<Expandable title="Afficher les champs de UIState">
+  <ResponseField name="allowed" type="boolean" required>Indique si disponibilité, spawn et onboarding autorisent l'interface.</ResponseField>
+  <ResponseField name="allHidden" type="boolean" required>Indique si `hideUI()` a appliqué le masquage global.</ResponseField>
+  <ResponseField name="hud" type="boolean" required>Visibilité effective du HUD personnalisé.</ResponseField>
+  <ResponseField name="watermark" type="boolean" required>Visibilité effective du watermark.</ResponseField>
+</Expandable>

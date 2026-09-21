@@ -1,5 +1,5 @@
 ---
-title: "Server exports — Player data"
+title: "Player data"
 description: "Language, persistent position, playtime and fresh character snapshots."
 icon: "database"
 ---
@@ -37,9 +37,15 @@ local coords = Open77.exports.call("bt_core", "getLastCoords", playerId):await()
 ```
 
 <ResponseField name="coords" type="Coordinates | nil">
-  Stored position, or `nil` when unavailable. See the
-  [Coordinates contract](./contracts#coordinates).
+  Stored position, or `nil` when unavailable.
 </ResponseField>
+
+<Expandable title="Show Coordinates fields">
+  <ResponseField name="x" type="number" required>World X coordinate.</ResponseField>
+  <ResponseField name="y" type="number" required>World Y coordinate.</ResponseField>
+  <ResponseField name="z" type="number" required>World Z coordinate.</ResponseField>
+  <ResponseField name="heading" type="number | nil">Optional orientation in degrees.</ResponseField>
+</Expandable>
 
 ## `setLastCoords`
 
@@ -87,6 +93,28 @@ print(("%s has played for %d seconds"):format(
 ```
 
 <ResponseField name="snapshot" type="CharacterSnapshot | nil">
-  Fresh server-side state, or `nil` when the character is not loaded. See the
-  complete [CharacterSnapshot contract](./contracts#charactersnapshot).
+  Fresh server-side state, or `nil` when the character is not loaded.
 </ResponseField>
+
+<Expandable title="Show CharacterSnapshot fields">
+  <ResponseField name="userId" type="string" required>Persistent Open2077 user identifier.</ResponseField>
+  <ResponseField name="characterId" type="string" required>Persistent BT CORE character identifier.</ResponseField>
+  <ResponseField name="characterKey" type="string" required>Persistent character-slot key.</ResponseField>
+  <ResponseField name="firstname" type="string" required>First name; may be empty during incomplete onboarding.</ResponseField>
+  <ResponseField name="lastname" type="string" required>Last name; may be empty during incomplete onboarding.</ResponseField>
+  <ResponseField name="dateOfBirth" type="string | nil">ISO `YYYY-MM-DD` date.</ResponseField>
+  <ResponseField name="sex" type="string" required>Stored sex value; onboarding currently uses `male` or `female`.</ResponseField>
+  <ResponseField name="lifepath" type="string" required>`corpo`, `streetkid`, `nomad`, or empty before completion.</ResponseField>
+  <ResponseField name="phoneNumber" type="string | nil">Generated persistent phone number.</ResponseField>
+  <ResponseField name="eddies" type="integer" required>Current cash balance.</ResponseField>
+  <ResponseField name="bank" type="integer" required>Current bank balance.</ResponseField>
+  <ResponseField name="others" type="object&lt;string, integer&gt;" required>Extensible balances keyed by account name.</ResponseField>
+  <ResponseField name="items" type="object&lt;string, integer&gt;" required>Persistent quantities keyed by item name.</ResponseField>
+  <ResponseField name="xp" type="integer" required>Non-negative experience total.</ResponseField>
+  <ResponseField name="permissionLevel" type="integer" required>Numeric character permission level.</ResponseField>
+  <ResponseField name="roles" type="string[]" required>Assigned free-form staff role keys.</ResponseField>
+  <ResponseField name="language" type="string" required>Stored language code; defaults to `fr`.</ResponseField>
+  <ResponseField name="lastCoords" type="object | nil">Last position with `x`, `y`, `z`, and optional `heading`.</ResponseField>
+  <ResponseField name="playtimeSeconds" type="integer" required>Live cumulative playtime at snapshot creation.</ResponseField>
+  <ResponseField name="status" type="string" required>Persistent status; defaults to `active`.</ResponseField>
+</Expandable>

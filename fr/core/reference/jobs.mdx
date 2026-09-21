@@ -1,5 +1,5 @@
 ---
-title: "Exports serveur — Métiers"
+title: "Métiers"
 description: "Catalogue, affectations, grades et métier principal."
 icon: "code"
 ---
@@ -22,8 +22,14 @@ local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
 
 <ResponseField name="catalog" type="object&lt;string, JobDefinition&gt;" required>
   Copie défensive indexée par `jobKey`, vide si aucun métier n'est configuré.
-  Voir le [contrat JobDefinition](./contracts#jobdefinition).
 </ResponseField>
+
+<Expandable title="Afficher les champs de JobDefinition">
+  <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+  <ResponseField name="category" type="string" required>Catégorie comme `civil`, `law` ou `illegal`.</ResponseField>
+  <ResponseField name="isIllegal" type="boolean | nil">Drapeau facultatif de métier illégal.</ResponseField>
+  <ResponseField name="grades" type="object&lt;integer, GradeDefinition&gt;" required>Grades indexés depuis `0`, chacun avec `label`, `salary` et `salaryAccount`.</ResponseField>
+</Expandable>
 
 ## `getJobs`
 
@@ -39,8 +45,19 @@ local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
 
 <ResponseField name="jobs" type="JobSummary[]" required>
   Métiers détenus résolus, ou liste vide si le personnage est indisponible.
-  Voir le [contrat JobSummary](./contracts#jobsummary).
 </ResponseField>
+
+<Expandable title="Afficher les champs de JobSummary">
+  <ResponseField name="key" type="string" required>Clé configurée du métier.</ResponseField>
+  <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+  <ResponseField name="category" type="string" required>Catégorie configurée, `civil` par défaut.</ResponseField>
+  <ResponseField name="isIllegal" type="boolean" required>Indique si le métier est illégal.</ResponseField>
+  <ResponseField name="grade" type="integer" required>Grade configuré détenu.</ResponseField>
+  <ResponseField name="gradeLabel" type="string" required>Libellé du grade.</ResponseField>
+  <ResponseField name="salary" type="integer" required>Salaire configuré.</ResponseField>
+  <ResponseField name="salaryAccount" type="string" required>Compte de destination.</ResponseField>
+  <ResponseField name="isPrimary" type="boolean" required>Indique s'il s'agit du métier principal.</ResponseField>
+</Expandable>
 
 ## `getPrimaryJob`
 
@@ -55,9 +72,20 @@ local job = Open77.exports.call("bt_core", "getPrimaryJob", playerId):await()
 ```
 
 <ResponseField name="job" type="JobSummary" required>
-  Métier principal, ou repli non persisté `unemployed` grade `0`. Voir le
-  [contrat JobSummary](./contracts#jobsummary).
+  Métier principal, ou repli non persisté `unemployed` grade `0`.
 </ResponseField>
+
+<Expandable title="Afficher les champs de JobSummary">
+  <ResponseField name="key" type="string" required>Clé configurée du métier.</ResponseField>
+  <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+  <ResponseField name="category" type="string" required>Catégorie configurée.</ResponseField>
+  <ResponseField name="isIllegal" type="boolean" required>Indique si le métier est illégal.</ResponseField>
+  <ResponseField name="grade" type="integer" required>Grade configuré détenu.</ResponseField>
+  <ResponseField name="gradeLabel" type="string" required>Libellé du grade.</ResponseField>
+  <ResponseField name="salary" type="integer" required>Salaire configuré.</ResponseField>
+  <ResponseField name="salaryAccount" type="string" required>Compte de destination.</ResponseField>
+  <ResponseField name="isPrimary" type="boolean" required>Indique s'il s'agit du métier principal.</ResponseField>
+</Expandable>
 
 ## `hasJob`
 

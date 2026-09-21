@@ -1,5 +1,5 @@
 ---
-title: "Client exports — Character state"
+title: "Character state"
 description: "Check local readiness and read the character snapshot received by the client."
 icon: "user-check"
 ---
@@ -34,8 +34,30 @@ print(("Welcome %s %s"):format(player.firstname, player.lastname))
 
 <ResponseField name="snapshot" type="CharacterSnapshot | nil">
   The last readiness snapshot, or `nil` before readiness and after session end.
-  See the complete [CharacterSnapshot contract](./contracts#charactersnapshot).
 </ResponseField>
+
+<Expandable title="Show CharacterSnapshot fields">
+  <ResponseField name="userId" type="string" required>Persistent Open2077 user identifier.</ResponseField>
+  <ResponseField name="characterId" type="string" required>Persistent BT CORE character identifier.</ResponseField>
+  <ResponseField name="characterKey" type="string" required>Persistent character-slot key.</ResponseField>
+  <ResponseField name="firstname" type="string" required>First name; may be empty during incomplete onboarding.</ResponseField>
+  <ResponseField name="lastname" type="string" required>Last name; may be empty during incomplete onboarding.</ResponseField>
+  <ResponseField name="dateOfBirth" type="string | nil">ISO `YYYY-MM-DD` date.</ResponseField>
+  <ResponseField name="sex" type="string" required>Stored sex value; onboarding currently uses `male` or `female`.</ResponseField>
+  <ResponseField name="lifepath" type="string" required>`corpo`, `streetkid`, `nomad`, or empty before completion.</ResponseField>
+  <ResponseField name="phoneNumber" type="string | nil">Generated persistent phone number.</ResponseField>
+  <ResponseField name="eddies" type="integer" required>Current cash balance.</ResponseField>
+  <ResponseField name="bank" type="integer" required>Current bank balance.</ResponseField>
+  <ResponseField name="others" type="object&lt;string, integer&gt;" required>Extensible balances keyed by account name.</ResponseField>
+  <ResponseField name="items" type="object&lt;string, integer&gt;" required>Persistent quantities keyed by item name.</ResponseField>
+  <ResponseField name="xp" type="integer" required>Non-negative experience total.</ResponseField>
+  <ResponseField name="permissionLevel" type="integer" required>Numeric character permission level.</ResponseField>
+  <ResponseField name="roles" type="string[]" required>Assigned free-form staff role keys.</ResponseField>
+  <ResponseField name="language" type="string" required>Stored language code; defaults to `fr`.</ResponseField>
+  <ResponseField name="lastCoords" type="object | nil">Last position with `x`, `y`, `z`, and optional `heading`.</ResponseField>
+  <ResponseField name="playtimeSeconds" type="integer" required>Cumulative playtime captured by the server.</ResponseField>
+  <ResponseField name="status" type="string" required>Persistent status; defaults to `active`.</ResponseField>
+</Expandable>
 
 <Warning>
 The client snapshot is not updated after every server mutation. Treat it as

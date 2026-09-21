@@ -1,5 +1,5 @@
 ---
-title: "Exports serveur — Véhicules"
+title: "Véhicules"
 description: "Lister les garages et posséder, sortir ou remiser des véhicules persistants."
 icon: "car"
 ---
@@ -16,9 +16,13 @@ local garages = Open77.exports.call("bt_core", "listGarages"):await()
 ```
 
 <ResponseField name="garages" type="object&lt;string, GarageDefinition&gt;" required>
-  Catalogue indexé par `garageKey` ; `default` est livré. Voir le
-  [contrat GarageDefinition](./contracts#garagedefinition).
+  Catalogue indexé par `garageKey` ; `default` est livré.
 </ResponseField>
+
+<Expandable title="Afficher les champs de GarageDefinition">
+  <ResponseField name="label" type="string" required>Libellé affiché.</ResponseField>
+  <ResponseField name="position" type="object" required>Position de spawn contenant `x`, `y`, `z` et `heading`.</ResponseField>
+</Expandable>
 
 ## `listVehicles`
 
@@ -33,8 +37,16 @@ local vehicles = Open77.exports.call("bt_core", "listVehicles", playerId, "defau
 
 <ResponseField name="vehicles" type="OwnedVehicle[]" required>
   Véhicules correspondants, ou liste vide si aucun n'existe ou si le personnage
-  n'est pas chargé. Voir le [contrat OwnedVehicle](./contracts#ownedvehicle).
+  n'est pas chargé.
 </ResponseField>
+
+<Expandable title="Afficher les champs de OwnedVehicle">
+  <ResponseField name="vehicleUid" type="string" required>Identifiant persistant de propriété.</ResponseField>
+  <ResponseField name="garageKey" type="string" required>Clé de garage configurée.</ResponseField>
+  <ResponseField name="record" type="string" required>Record Open2077 commençant par `Vehicle.`.</ResponseField>
+  <ResponseField name="plate" type="string" required>Plaque d'immatriculation générée.</ResponseField>
+  <ResponseField name="state" type="string" required>`stored` ou `out`.</ResponseField>
+</Expandable>
 
 ## `giveVehicle`
 

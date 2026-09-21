@@ -50,7 +50,6 @@
                   "en/core/reference/player-data"
                 ]
               },
-              "en/core/reference/contracts",
               "en/core/events-permissions"
             ]
           }
@@ -94,7 +93,6 @@
                   "fr/core/reference/player-data"
                 ]
               },
-              "fr/core/reference/contracts",
               "fr/core/events-permissions"
             ]
           }

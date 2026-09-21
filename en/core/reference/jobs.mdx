@@ -1,5 +1,5 @@
 ---
-title: "Server exports — Jobs"
+title: "Jobs"
 description: "Job catalog, assignment, grades and primary-job contracts."
 icon: "code"
 ---
@@ -21,9 +21,15 @@ local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
 ```
 
 <ResponseField name="catalog" type="object&lt;string, JobDefinition&gt;" required>
-  Defensive copy keyed by `jobKey`; empty when no jobs are configured. See the
-  complete [JobDefinition contract](./contracts#jobdefinition).
+  Defensive copy keyed by `jobKey`; empty when no jobs are configured.
 </ResponseField>
+
+<Expandable title="Show JobDefinition fields">
+  <ResponseField name="label" type="string" required>Display label.</ResponseField>
+  <ResponseField name="category" type="string" required>Domain category such as `civil`, `law`, or `illegal`.</ResponseField>
+  <ResponseField name="isIllegal" type="boolean | nil">Optional illegal-job flag.</ResponseField>
+  <ResponseField name="grades" type="object&lt;integer, GradeDefinition&gt;" required>Grades indexed from `0`; each contains `label`, `salary`, and `salaryAccount`.</ResponseField>
+</Expandable>
 
 ## `getJobs`
 
@@ -38,9 +44,20 @@ local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
 ```
 
 <ResponseField name="jobs" type="JobSummary[]" required>
-  Resolved held jobs; empty when the character is unavailable. See the
-  [JobSummary contract](./contracts#jobsummary).
+  Resolved held jobs; empty when the character is unavailable.
 </ResponseField>
+
+<Expandable title="Show JobSummary fields">
+  <ResponseField name="key" type="string" required>Configured job key.</ResponseField>
+  <ResponseField name="label" type="string" required>Display label.</ResponseField>
+  <ResponseField name="category" type="string" required>Configured category; defaults to `civil`.</ResponseField>
+  <ResponseField name="isIllegal" type="boolean" required>Whether the job is marked illegal.</ResponseField>
+  <ResponseField name="grade" type="integer" required>Held configured grade.</ResponseField>
+  <ResponseField name="gradeLabel" type="string" required>Display label for that grade.</ResponseField>
+  <ResponseField name="salary" type="integer" required>Configured salary.</ResponseField>
+  <ResponseField name="salaryAccount" type="string" required>Destination account.</ResponseField>
+  <ResponseField name="isPrimary" type="boolean" required>Whether this is the primary held job.</ResponseField>
+</Expandable>
 
 ## `getPrimaryJob`
 
@@ -55,9 +72,20 @@ local job = Open77.exports.call("bt_core", "getPrimaryJob", playerId):await()
 ```
 
 <ResponseField name="job" type="JobSummary" required>
-  Primary held job, or the non-persisted `unemployed` grade `0` fallback. See
-  the [JobSummary contract](./contracts#jobsummary).
+  Primary held job, or the non-persisted `unemployed` grade `0` fallback.
 </ResponseField>
+
+<Expandable title="Show JobSummary fields">
+  <ResponseField name="key" type="string" required>Configured job key.</ResponseField>
+  <ResponseField name="label" type="string" required>Display label.</ResponseField>
+  <ResponseField name="category" type="string" required>Configured category.</ResponseField>
+  <ResponseField name="isIllegal" type="boolean" required>Whether the job is marked illegal.</ResponseField>
+  <ResponseField name="grade" type="integer" required>Held configured grade.</ResponseField>
+  <ResponseField name="gradeLabel" type="string" required>Display label for that grade.</ResponseField>
+  <ResponseField name="salary" type="integer" required>Configured salary.</ResponseField>
+  <ResponseField name="salaryAccount" type="string" required>Destination account.</ResponseField>
+  <ResponseField name="isPrimary" type="boolean" required>Whether this is the primary held job.</ResponseField>
+</Expandable>
 
 ## `hasJob`
 

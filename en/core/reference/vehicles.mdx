@@ -1,5 +1,5 @@
 ---
-title: "Server exports — Vehicles"
+title: "Vehicles"
 description: "List garages and own, spawn or store persistent vehicles."
 icon: "car"
 ---
@@ -16,9 +16,13 @@ local garages = Open77.exports.call("bt_core", "listGarages"):await()
 ```
 
 <ResponseField name="garages" type="object&lt;string, GarageDefinition&gt;" required>
-  Catalog keyed by `garageKey`; `default` is shipped. See the
-  [GarageDefinition contract](./contracts#garagedefinition).
+  Catalog keyed by `garageKey`; `default` is shipped.
 </ResponseField>
+
+<Expandable title="Show GarageDefinition fields">
+  <ResponseField name="label" type="string" required>Display label.</ResponseField>
+  <ResponseField name="position" type="object" required>Spawn position containing `x`, `y`, `z`, and `heading`.</ResponseField>
+</Expandable>
 
 ## `listVehicles`
 
@@ -33,8 +37,16 @@ local vehicles = Open77.exports.call("bt_core", "listVehicles", playerId, "defau
 
 <ResponseField name="vehicles" type="OwnedVehicle[]" required>
   Matching vehicles, or an empty list when none exist or the character is not
-  loaded. See the [OwnedVehicle contract](./contracts#ownedvehicle).
+  loaded.
 </ResponseField>
+
+<Expandable title="Show OwnedVehicle fields">
+  <ResponseField name="vehicleUid" type="string" required>Persistent ownership identifier.</ResponseField>
+  <ResponseField name="garageKey" type="string" required>Configured garage key.</ResponseField>
+  <ResponseField name="record" type="string" required>Open2077 vehicle record beginning with `Vehicle.`.</ResponseField>
+  <ResponseField name="plate" type="string" required>Generated license plate.</ResponseField>
+  <ResponseField name="state" type="string" required>`stored` or `out`.</ResponseField>
+</Expandable>
 
 ## `giveVehicle`
 

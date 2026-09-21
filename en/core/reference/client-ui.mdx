@@ -1,5 +1,5 @@
 ---
-title: "Client exports — HUD"
+title: "HUD"
 description: "Hide, show and inspect the effective BT CORE gameplay UI state."
 icon: "display"
 ---
@@ -87,5 +87,12 @@ end
 ```
 
 <ResponseField name="state" type="UIState" required>
-  See the complete [UIState contract](./contracts#uistate).
+  Current gates and effective component visibility.
 </ResponseField>
+
+<Expandable title="Show UIState fields">
+  <ResponseField name="allowed" type="boolean" required>Whether readiness, spawning and onboarding permit gameplay UI.</ResponseField>
+  <ResponseField name="allHidden" type="boolean" required>Whether `hideUI()` applied the global override.</ResponseField>
+  <ResponseField name="hud" type="boolean" required>Effective custom HUD visibility.</ResponseField>
+  <ResponseField name="watermark" type="boolean" required>Effective watermark visibility.</ResponseField>
+</Expandable>
