@@ -1,15 +1,35 @@
 /*
- * Keep code samples readable without horizontal back-and-forth scrolling.
- * Wrapping is visual only, so Mintlify's copy action still returns the source.
+ * Mintlify wraps Shiki in a horizontal ScrollArea whose content uses an inline
+ * min-width: fit-content. Reset that wrapper before enabling visual line wrap.
+ * The source remains unchanged, so the copy button still returns valid code.
  */
-pre {
-  max-width: 100%;
-  overflow-x: hidden;
+.code-block.code-block [data-component-part="scroll-area-viewport"] {
+  overflow-x: hidden !important;
 }
 
-pre code {
-  min-width: 0;
+.code-block.code-block [data-component-part="scroll-area-content"] {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.code-block .whitespace-pre,
+.code-block pre,
+.code-block pre code,
+.code-block pre code > .line {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
   white-space: pre-wrap !important;
   overflow-wrap: anywhere;
   word-break: normal;
+}
+
+.code-block pre code > .line {
+  display: block;
+}
+
+.code-block [data-fade-overlay] {
+  display: none;
 }
