@@ -11,7 +11,7 @@ Appeler ces exports serveur avec `Open77.exports.call(...):await()`. Sauf indica
 Indique si le personnage du joueur est chargé en mémoire.
 
 ```lua
---- Signature de l'export : isReady(playerId)
+--- isReady(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return boolean ready `true` si le personnage est chargé ; sinon `false`.
 
@@ -23,7 +23,7 @@ local ready = Open77.exports.call("bt_core", "isReady", playerId):await()
 Retourne l'identifiant Open2077 persistant du joueur.
 
 ```lua
---- Signature de l'export : getUserId(playerId)
+--- getUserId(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string? userId Identifiant Open2077 persistant, ou `nil` s'il est indisponible.
 
@@ -35,7 +35,7 @@ local userId = Open77.exports.call("bt_core", "getUserId", playerId):await()
 Retourne l'identifiant persistant du personnage actif.
 
 ```lua
---- Signature de l'export : getCharacterId(playerId)
+--- getCharacterId(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string? characterId Identifiant persistant du personnage, ou `nil` s'il est indisponible.
 
@@ -47,7 +47,7 @@ local characterId = Open77.exports.call("bt_core", "getCharacterId", playerId):a
 Retourne le prénom du personnage.
 
 ```lua
---- Signature de l'export : getFirstname(playerId)
+--- getFirstname(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string firstname Prénom, ou une chaîne vide si le personnage est indisponible.
 
@@ -61,7 +61,7 @@ Modifie le prénom du personnage chargé.
 **Paramètres :** `value` est une chaîne non vide de 32 caractères maximum.
 
 ```lua
---- Signature de l'export : setFirstname(playerId, value)
+--- setFirstname(playerId, value)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param value string Prénom non vide, limité à 32 caractères.
 ---@return boolean success `true` si la valeur est acceptée ; `false` si le personnage est indisponible ou la valeur invalide.
@@ -74,7 +74,7 @@ local ok = Open77.exports.call("bt_core", "setFirstname", playerId, "V"):await()
 Retourne le nom du personnage.
 
 ```lua
---- Signature de l'export : getLastname(playerId)
+--- getLastname(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string lastname Nom, ou une chaîne vide si le personnage est indisponible.
 
@@ -88,7 +88,7 @@ Modifie le nom du personnage chargé.
 **Paramètres :** `value` est une chaîne non vide de 32 caractères maximum.
 
 ```lua
---- Signature de l'export : setLastname(playerId, value)
+--- setLastname(playerId, value)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param value string Nom non vide, limité à 32 caractères.
 ---@return boolean success `true` si la valeur est acceptée ; `false` si le personnage est indisponible ou la valeur invalide.
@@ -101,7 +101,7 @@ local ok = Open77.exports.call("bt_core", "setLastname", playerId, "Mercer"):awa
 Retourne le prénom et le nom assemblés.
 
 ```lua
---- Signature de l'export : getFullName(playerId)
+--- getFullName(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string fullName Nom complet nettoyé, ou une chaîne vide s'il est indisponible.
 
@@ -113,7 +113,7 @@ local fullName = Open77.exports.call("bt_core", "getFullName", playerId):await()
 Retourne la date de naissance au format ISO `YYYY-MM-DD`.
 
 ```lua
---- Signature de l'export : getDateOfBirth(playerId)
+--- getDateOfBirth(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string? dateOfBirth Date ISO enregistrée, ou `nil` si elle est indisponible.
 
@@ -128,7 +128,7 @@ Modifie la date de naissance au format ISO `YYYY-MM-DD`.
 défaut n'est appliquée.
 
 ```lua
---- Signature de l'export : setDateOfBirth(playerId, isoDate)
+--- setDateOfBirth(playerId, isoDate)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param isoDate string Date respectant `YYYY-MM-DD` ; aucune valeur par défaut.
 ---@return boolean success `true` si la valeur est acceptée ; `false` si le personnage est indisponible ou la valeur invalide.
@@ -141,7 +141,7 @@ local ok = Open77.exports.call("bt_core", "setDateOfBirth", playerId, "2045-06-1
 Retourne la valeur de sexe du personnage.
 
 ```lua
---- Signature de l'export : getSex(playerId)
+--- getSex(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string sex Valeur enregistrée, ou une chaîne vide si elle est indisponible.
 
@@ -157,7 +157,7 @@ L'onboarding fournit actuellement `male` ou `female`. Aucune valeur par défaut
 n'est appliquée.
 
 ```lua
---- Signature de l'export : setSex(playerId, value)
+--- setSex(playerId, value)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param value string Chaîne de 16 caractères maximum ; l'onboarding utilise `male` ou `female` ; aucun défaut.
 ---@return boolean success `true` si la valeur est acceptée ; `false` si le personnage est indisponible ou la valeur invalide.
@@ -170,7 +170,7 @@ local ok = Open77.exports.call("bt_core", "setSex", playerId, "female"):await()
 Retourne l'origine Cyberpunk du personnage.
 
 ```lua
---- Signature de l'export : getLifepath(playerId)
+--- getLifepath(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string lifepath Valeur canonique enregistrée, ou une chaîne vide si elle est indisponible.
 
@@ -185,7 +185,7 @@ Modifie l'origine avec `corpo`, `streetkid` ou `nomad`.
 valeur par défaut n'est appliquée.
 
 ```lua
---- Signature de l'export : setLifepath(playerId, value)
+--- setLifepath(playerId, value)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param value 'corpo'|'streetkid'|'nomad' Origine canonique ; aucune valeur par défaut.
 ---@return boolean success `true` si la valeur est acceptée ; `false` si le personnage est indisponible ou la valeur invalide.
@@ -198,7 +198,7 @@ local ok = Open77.exports.call("bt_core", "setLifepath", playerId, "nomad"):awai
 Retourne le numéro unique du personnage.
 
 ```lua
---- Signature de l'export : getPhoneNumber(playerId)
+--- getPhoneNumber(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return string? phoneNumber Numéro unique enregistré, ou `nil` s'il est indisponible.
 

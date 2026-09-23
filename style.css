@@ -4,7 +4,7 @@
  * The source remains unchanged, so the copy button still returns valid code.
  */
 .code-block.code-block [data-component-part="scroll-area-viewport"] {
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
 }
 
 .code-block.code-block [data-component-part="scroll-area-content"] {
@@ -15,8 +15,7 @@
 
 .code-block .whitespace-pre,
 .code-block pre,
-.code-block pre code,
-.code-block pre code > .line {
+.code-block pre code {
   box-sizing: border-box;
   width: 100% !important;
   min-width: 0 !important;
@@ -27,9 +26,13 @@
 }
 
 .code-block pre code > .line {
-  display: block;
+  white-space: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
 }
 
-.code-block [data-fade-overlay] {
-  display: none;
+.code-block pre code > .line:empty ~ .line {
+  white-space: pre !important;
+  overflow-wrap: normal;
+  word-break: normal;
 }

@@ -11,7 +11,7 @@ Call these server exports with `Open77.exports.call(...):await()`. Unless a sect
 Returns the cash balance.
 
 ```lua
---- Export signature: getEddies(playerId)
+--- getEddies(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return integer balance Current balance, or `0` when unavailable or invalid.
 
@@ -26,7 +26,7 @@ Sets the cash balance and records the movement.
 defaults to no audit label.
 
 ```lua
---- Export signature: setEddies(playerId, amount, reason)
+--- setEddies(playerId, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param amount number Number rounded down and then clamped to `0`; no default.
 ---@param reason? string Optional audit label; defaults to `nil`.
@@ -43,7 +43,7 @@ Adds eddies to the cash balance.
 defaults to no audit label. The resulting balance cannot be negative.
 
 ```lua
---- Export signature: addEddies(playerId, amount, reason)
+--- addEddies(playerId, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param amount number Non-zero positive or negative number; no default.
 ---@param reason? string Optional audit label; defaults to `nil`.
@@ -60,7 +60,7 @@ Removes eddies when the balance is sufficient.
 defaults to no audit label.
 
 ```lua
---- Export signature: removeEddies(playerId, amount, reason)
+--- removeEddies(playerId, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param amount number Positive number rounded down; no default.
 ---@param reason? string Optional audit label; defaults to `nil`.
@@ -74,7 +74,7 @@ local ok = Open77.exports.call("bt_core", "removeEddies", playerId, 50, "shop_pu
 Returns the bank balance.
 
 ```lua
---- Export signature: getBank(playerId)
+--- getBank(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return integer balance Current balance, or `0` when unavailable or invalid.
 
@@ -89,7 +89,7 @@ Sets the bank balance and records the movement.
 defaults to no audit label.
 
 ```lua
---- Export signature: setBank(playerId, amount, reason)
+--- setBank(playerId, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param amount number Number rounded down and then clamped to `0`; no default.
 ---@param reason? string Optional audit label; defaults to `nil`.
@@ -106,7 +106,7 @@ Adds an amount to the bank account.
 defaults to no audit label. The resulting balance cannot be negative.
 
 ```lua
---- Export signature: addBank(playerId, amount, reason)
+--- addBank(playerId, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param amount number Non-zero positive or negative number; no default.
 ---@param reason? string Optional audit label; defaults to `nil`.
@@ -123,7 +123,7 @@ Removes an amount when the bank balance is sufficient.
 defaults to no audit label.
 
 ```lua
---- Export signature: removeBank(playerId, amount, reason)
+--- removeBank(playerId, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param amount number Positive number rounded down; no default.
 ---@param reason? string Optional audit label; defaults to `nil`.
@@ -140,7 +140,7 @@ Returns a custom currency balance.
 digits, or `_`, with at most 32 characters. Examples: `black`, `capsule`.
 
 ```lua
---- Export signature: getOther(playerId, key)
+--- getOther(playerId, key)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@param key string Custom currency key: letter first, then letters, digits, or `_`; 32 characters maximum.
 ---@return integer balance Current balance, or `0` when unavailable or invalid.
@@ -157,7 +157,7 @@ Sets a custom currency balance.
 `0`; optional `reason` has no default label.
 
 ```lua
---- Export signature: setOther(playerId, key, amount, reason)
+--- setOther(playerId, key, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param key string Custom currency key: letter first, then letters, digits, or `_`; 32 characters maximum.
 ---@param amount number Number rounded down and then clamped to `0`; no default.
@@ -176,7 +176,7 @@ Adds an amount to a custom currency balance.
 negative; optional `reason` has no default label.
 
 ```lua
---- Export signature: addOther(playerId, key, amount, reason)
+--- addOther(playerId, key, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param key string Custom currency key: letter first, then letters, digits, or `_`; 32 characters maximum.
 ---@param amount number Non-zero positive or negative number; no default.
@@ -195,7 +195,7 @@ Removes an amount when the custom currency balance is sufficient.
 down; optional `reason` has no default label.
 
 ```lua
---- Export signature: removeOther(playerId, key, amount, reason)
+--- removeOther(playerId, key, amount, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param key string Custom currency key: letter first, then letters, digits, or `_`; 32 characters maximum.
 ---@param amount number Positive number rounded down; no default.
@@ -210,7 +210,7 @@ local ok = Open77.exports.call("bt_core", "removeOther", playerId, "capsule", 1,
 Returns a copy of every custom currency balance.
 
 ```lua
---- Export signature: listOthers(playerId)
+--- listOthers(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return table<string, integer> balances Defensive copy; empty when the character is unavailable.
 

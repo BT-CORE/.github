@@ -11,7 +11,7 @@ Call these server exports with `Open77.exports.call(...):await()`. Unless a sect
 Returns whether the player's character is loaded in memory.
 
 ```lua
---- Export signature: isReady(playerId)
+--- isReady(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return boolean ready `true` when the character is loaded; otherwise `false`.
 
@@ -23,7 +23,7 @@ local ready = Open77.exports.call("bt_core", "isReady", playerId):await()
 Returns the player's persistent Open2077 identifier.
 
 ```lua
---- Export signature: getUserId(playerId)
+--- getUserId(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string? userId Persistent Open2077 user identifier, or `nil` when unavailable.
 
@@ -35,7 +35,7 @@ local userId = Open77.exports.call("bt_core", "getUserId", playerId):await()
 Returns the active character's persistent identifier.
 
 ```lua
---- Export signature: getCharacterId(playerId)
+--- getCharacterId(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string? characterId Persistent character identifier, or `nil` when unavailable.
 
@@ -47,7 +47,7 @@ local characterId = Open77.exports.call("bt_core", "getCharacterId", playerId):a
 Returns the character's first name.
 
 ```lua
---- Export signature: getFirstname(playerId)
+--- getFirstname(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string firstname First name, or an empty string when the character is unavailable.
 
@@ -61,7 +61,7 @@ Updates the loaded character's first name.
 **Parameters:** `value` is a non-empty string of at most 32 characters.
 
 ```lua
---- Export signature: setFirstname(playerId, value)
+--- setFirstname(playerId, value)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param value string Non-empty first name, limited to 32 characters.
 ---@return boolean success `true` when accepted; `false` when the character is unavailable or the value is invalid.
@@ -74,7 +74,7 @@ local ok = Open77.exports.call("bt_core", "setFirstname", playerId, "V"):await()
 Returns the character's last name.
 
 ```lua
---- Export signature: getLastname(playerId)
+--- getLastname(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string lastname Last name, or an empty string when the character is unavailable.
 
@@ -88,7 +88,7 @@ Updates the loaded character's last name.
 **Parameters:** `value` is a non-empty string of at most 32 characters.
 
 ```lua
---- Export signature: setLastname(playerId, value)
+--- setLastname(playerId, value)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param value string Non-empty last name, limited to 32 characters.
 ---@return boolean success `true` when accepted; `false` when the character is unavailable or the value is invalid.
@@ -101,7 +101,7 @@ local ok = Open77.exports.call("bt_core", "setLastname", playerId, "Mercer"):awa
 Returns the combined first and last name.
 
 ```lua
---- Export signature: getFullName(playerId)
+--- getFullName(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string fullName Trimmed full name, or an empty string when unavailable.
 
@@ -113,7 +113,7 @@ local fullName = Open77.exports.call("bt_core", "getFullName", playerId):await()
 Returns the date of birth in ISO `YYYY-MM-DD` format.
 
 ```lua
---- Export signature: getDateOfBirth(playerId)
+--- getDateOfBirth(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string? dateOfBirth Stored ISO date, or `nil` when unavailable.
 
@@ -127,7 +127,7 @@ Updates the date of birth in ISO `YYYY-MM-DD` format.
 **Parameters:** `isoDate` must match `YYYY-MM-DD`. No default is applied.
 
 ```lua
---- Export signature: setDateOfBirth(playerId, isoDate)
+--- setDateOfBirth(playerId, isoDate)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param isoDate string Date string matching `YYYY-MM-DD`; no default.
 ---@return boolean success `true` when accepted; `false` when the character is unavailable or the value is invalid.
@@ -140,7 +140,7 @@ local ok = Open77.exports.call("bt_core", "setDateOfBirth", playerId, "2045-06-1
 Returns the character's sex value.
 
 ```lua
---- Export signature: getSex(playerId)
+--- getSex(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string sex Stored value, or an empty string when unavailable.
 
@@ -155,7 +155,7 @@ Updates the loaded character's sex value.
 currently supplies `male` or `female`. No default is applied.
 
 ```lua
---- Export signature: setSex(playerId, value)
+--- setSex(playerId, value)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param value string String up to 16 characters; onboarding uses `male` or `female`; no default.
 ---@return boolean success `true` when accepted; `false` when the character is unavailable or the value is invalid.
@@ -168,7 +168,7 @@ local ok = Open77.exports.call("bt_core", "setSex", playerId, "female"):await()
 Returns the character's Cyberpunk lifepath.
 
 ```lua
---- Export signature: getLifepath(playerId)
+--- getLifepath(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string lifepath Stored canonical value, or an empty string when unavailable.
 
@@ -183,7 +183,7 @@ Updates the lifepath with `corpo`, `streetkid`, or `nomad`.
 applied.
 
 ```lua
---- Export signature: setLifepath(playerId, value)
+--- setLifepath(playerId, value)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param value 'corpo'|'streetkid'|'nomad' Canonical lifepath value; no default.
 ---@return boolean success `true` when accepted; `false` when the character is unavailable or the value is invalid.
@@ -196,7 +196,7 @@ local ok = Open77.exports.call("bt_core", "setLifepath", playerId, "nomad"):awai
 Returns the character's unique phone number.
 
 ```lua
---- Export signature: getPhoneNumber(playerId)
+--- getPhoneNumber(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return string? phoneNumber Unique stored number, or `nil` when unavailable.
 

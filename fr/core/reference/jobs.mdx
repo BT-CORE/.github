@@ -14,7 +14,7 @@ Retourne une copie du catalogue des métiers configurés.
 `2`) et `fixer` (grades `0`, `1`). Elles sont extensibles dans `Config.jobs`.
 
 ```lua
---- Signature de l'export : listJobCatalog()
+--- listJobCatalog()
 ---@return table<string, table> catalog Copie défensive de `Config.jobs` ; vide sans configuration.
 
 local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
@@ -36,7 +36,7 @@ local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
 Retourne tous les métiers du personnage avec leurs grades résolus.
 
 ```lua
---- Signature de l'export : getJobs(playerId)
+--- getJobs(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return table[] jobs Métiers attribués et résolus ; vide si le personnage est indisponible.
 
@@ -64,7 +64,7 @@ local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
 Retourne le métier principal ou le métier `unemployed` par défaut.
 
 ```lua
---- Signature de l'export : getPrimaryJob(playerId)
+--- getPrimaryJob(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return table job Métier principal, ou repli non persistant `unemployed` au grade `0`.
 
@@ -95,7 +95,7 @@ Indique si le personnage possède un métier.
 `police` ou `fixer` par défaut.
 
 ```lua
---- Signature de l'export : hasJob(playerId, jobKey)
+--- hasJob(playerId, jobKey)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@param jobKey string Clé de métier configurée ; valeurs livrées : `unemployed`, `police` et `fixer`.
 ---@return boolean hasJob `true` si le métier configuré est attribué ; sinon `false`.
@@ -113,7 +113,7 @@ Attribue un métier configuré et un grade facultatif.
 sont extensibles dans `Config.jobs`.
 
 ```lua
---- Signature de l'export : addJob(playerId, jobKey, grade)
+--- addJob(playerId, jobKey, grade)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param jobKey string Clé de métier configurée ; valeurs livrées : `unemployed`, `police` et `fixer`.
 ---@param grade? integer Grade facultatif ; vaut `0` par défaut et doit exister dans `Config.jobs[jobKey].grades`.
@@ -130,7 +130,7 @@ Retire un métier du personnage.
 Les clés configurées par défaut sont `unemployed`, `police` et `fixer`.
 
 ```lua
---- Signature de l'export : removeJob(playerId, jobKey)
+--- removeJob(playerId, jobKey)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param jobKey string Clé d'un métier actuellement attribué au personnage.
 ---@return boolean success `true` si le métier est retiré ; `false` s'il est indisponible ou non attribué.
@@ -146,7 +146,7 @@ Modifie le grade d'un métier déjà attribué.
 `unemployed`, `0` à `2` pour `police` ou `0` à `1` pour `fixer` par défaut.
 
 ```lua
---- Signature de l'export : setJobGrade(playerId, jobKey, grade)
+--- setJobGrade(playerId, jobKey, grade)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param jobKey string Clé d'un métier actuellement attribué au personnage.
 ---@param grade integer Grade configuré : `0` pour `unemployed`, `0..2` pour `police` ou `0..1` pour `fixer` dans la configuration livrée ; cet export n'applique aucune valeur par défaut.
@@ -163,7 +163,7 @@ Définit comme principal un métier déjà attribué.
 Les clés configurées par défaut sont `unemployed`, `police` et `fixer`.
 
 ```lua
---- Signature de l'export : setPrimaryJob(playerId, jobKey)
+--- setPrimaryJob(playerId, jobKey)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param jobKey string Clé d'un métier actuellement attribué au personnage.
 ---@return boolean success `true` si le métier devient principal ; `false` s'il n'est pas attribué.

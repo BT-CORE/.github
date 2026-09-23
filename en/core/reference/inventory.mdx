@@ -15,7 +15,7 @@ or `.`, with at most 96 characters. Use a valid TweakDB item identifier such as
 `Items.Preset_Lexington_Default`.
 
 ```lua
---- Export signature: getItem(playerId, key)
+--- getItem(playerId, key)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
 ---@return integer quantity Stored quantity, or `0` when unavailable or invalid.
@@ -32,7 +32,7 @@ Sets an item's persistent quantity.
 `0`; optional `reason` has no default label.
 
 ```lua
---- Export signature: setItem(playerId, key, quantity, reason)
+--- setItem(playerId, key, quantity, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
 ---@param quantity number Number rounded down and then clamped to `0`; no default.
@@ -51,7 +51,7 @@ Adds a quantity to the persistent inventory.
 negative; optional `reason` has no default label.
 
 ```lua
---- Export signature: addItem(playerId, key, quantity, reason)
+--- addItem(playerId, key, quantity, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
 ---@param quantity number Non-zero positive or negative number; no default.
@@ -70,7 +70,7 @@ Removes a quantity when the inventory contains enough items.
 down; optional `reason` has no default label.
 
 ```lua
---- Export signature: removeItem(playerId, key, quantity, reason)
+--- removeItem(playerId, key, quantity, reason)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param key string Item key: letter first, then letters, digits, `_`, or `.`; 96 characters maximum.
 ---@param quantity number Positive number rounded down; no default.
@@ -85,7 +85,7 @@ local ok = Open77.exports.call("bt_core", "removeItem", playerId, "Items.Preset_
 Returns a copy of the persistent inventory.
 
 ```lua
---- Export signature: listItems(playerId)
+--- listItems(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return table<string, integer> items Defensive copy; empty when the character is unavailable.
 

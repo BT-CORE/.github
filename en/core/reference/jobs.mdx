@@ -14,7 +14,7 @@ Returns a copy of the configured job catalog.
 `2`), and `fixer` (grades `0`, `1`). Extend them in `Config.jobs`.
 
 ```lua
---- Export signature: listJobCatalog()
+--- listJobCatalog()
 ---@return table<string, table> catalog Defensive copy of `Config.jobs`; empty when unconfigured.
 
 local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
@@ -36,7 +36,7 @@ local catalog = Open77.exports.call("bt_core", "listJobCatalog"):await()
 Returns every character job with its resolved grade.
 
 ```lua
---- Export signature: getJobs(playerId)
+--- getJobs(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return table[] jobs Resolved held jobs; empty when the character is unavailable.
 
@@ -64,7 +64,7 @@ local jobs = Open77.exports.call("bt_core", "getJobs", playerId):await()
 Returns the primary job or the default `unemployed` job.
 
 ```lua
---- Export signature: getPrimaryJob(playerId)
+--- getPrimaryJob(playerId)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@return table job Primary job, or the non-persisted `unemployed` grade `0` fallback.
 
@@ -95,7 +95,7 @@ Returns whether the character holds a job.
 `police`, or `fixer` by default.
 
 ```lua
---- Export signature: hasJob(playerId, jobKey)
+--- hasJob(playerId, jobKey)
 ---@param playerId integer Runtime player identifier. An unloaded character receives the documented fallback.
 ---@param jobKey string Configured job key; shipped values are `unemployed`, `police`, and `fixer`.
 ---@return boolean hasJob `true` when the configured job is held; otherwise `false`.
@@ -113,7 +113,7 @@ Optional `grade` defaults to `0`; available grades are `0` for `unemployed`,
 `Config.jobs`.
 
 ```lua
---- Export signature: addJob(playerId, jobKey, grade)
+--- addJob(playerId, jobKey, grade)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param jobKey string Configured job key; shipped values are `unemployed`, `police`, and `fixer`.
 ---@param grade? integer Optional grade; defaults to `0` and must exist in `Config.jobs[jobKey].grades`.
@@ -130,7 +130,7 @@ Removes a job from the character.
 configured keys are `unemployed`, `police`, and `fixer`.
 
 ```lua
---- Export signature: removeJob(playerId, jobKey)
+--- removeJob(playerId, jobKey)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param jobKey string Key of a job currently held by the character.
 ---@return boolean success `true` when removed; `false` when unavailable or not held.
@@ -146,7 +146,7 @@ Updates the grade of an assigned job.
 `unemployed`, `0` to `2` for `police`, or `0` to `1` for `fixer` by default.
 
 ```lua
---- Export signature: setJobGrade(playerId, jobKey, grade)
+--- setJobGrade(playerId, jobKey, grade)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param jobKey string Key of a job currently held by the character.
 ---@param grade integer Configured grade: `0` for `unemployed`, `0..2` for `police`, or `0..1` for `fixer` by default; no default is applied by this export.
@@ -163,7 +163,7 @@ Marks an assigned job as primary.
 configured keys are `unemployed`, `police`, and `fixer`.
 
 ```lua
---- Export signature: setPrimaryJob(playerId, jobKey)
+--- setPrimaryJob(playerId, jobKey)
 ---@param playerId integer Runtime player identifier. The character must be loaded for this mutation.
 ---@param jobKey string Key of a job currently held by the character.
 ---@return boolean success `true` when updated; `false` when the job is not held.

@@ -15,7 +15,7 @@ chiffres, `_` ou `.`, sur 96 caractères maximum. Utiliser un identifiant objet
 TweakDB valide comme `Items.Preset_Lexington_Default`.
 
 ```lua
---- Signature de l'export : getItem(playerId, key)
+--- getItem(playerId, key)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@param key string Clé d'objet : une lettre puis lettres, chiffres, `_` ou `.` ; 96 caractères maximum.
 ---@return integer quantity Quantité enregistrée, ou `0` si l'entrée est indisponible ou invalide.
@@ -32,7 +32,7 @@ Fixe la quantité persistante d'un objet.
 et limité à `0` ; `reason`, facultatif, n'a pas de libellé par défaut.
 
 ```lua
---- Signature de l'export : setItem(playerId, key, quantity, reason)
+--- setItem(playerId, key, quantity, reason)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param key string Clé d'objet : une lettre puis lettres, chiffres, `_` ou `.` ; 96 caractères maximum.
 ---@param quantity number Nombre arrondi à l'entier inférieur puis limité à `0` ; aucun défaut.
@@ -51,7 +51,7 @@ Ajoute une quantité à l'inventaire persistant.
 négative ; `reason`, facultatif, n'a pas de libellé par défaut.
 
 ```lua
---- Signature de l'export : addItem(playerId, key, quantity, reason)
+--- addItem(playerId, key, quantity, reason)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param key string Clé d'objet : une lettre puis lettres, chiffres, `_` ou `.` ; 96 caractères maximum.
 ---@param quantity number Nombre non nul, positif ou négatif ; aucun défaut.
@@ -71,7 +71,7 @@ arrondie à l'entier inférieur ; `reason`, facultatif, n'a pas de libellé par
 défaut.
 
 ```lua
---- Signature de l'export : removeItem(playerId, key, quantity, reason)
+--- removeItem(playerId, key, quantity, reason)
 ---@param playerId integer Identifiant runtime du joueur. Le personnage doit être chargé pour cette modification.
 ---@param key string Clé d'objet : une lettre puis lettres, chiffres, `_` ou `.` ; 96 caractères maximum.
 ---@param quantity number Nombre positif, arrondi à l'entier inférieur ; aucun défaut.
@@ -86,7 +86,7 @@ local ok = Open77.exports.call("bt_core", "removeItem", playerId, "Items.Preset_
 Retourne une copie de l'inventaire persistant.
 
 ```lua
---- Signature de l'export : listItems(playerId)
+--- listItems(playerId)
 ---@param playerId integer Identifiant runtime du joueur. Un personnage non chargé reçoit la valeur de repli documentée.
 ---@return table<string, integer> items Copie défensive ; vide si le personnage est indisponible.
 
