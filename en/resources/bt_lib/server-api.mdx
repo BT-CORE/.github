@@ -1,0 +1,17 @@
+---
+title: "bt_lib server exports"
+description: "Notifications, readiness gates, zone lookup and currency formatting."
+icon: "server"
+---
+
+Available exports:
+
+| Export | Result |
+| --- | --- |
+| `notify(playerId, kind, title, message, durationMs?)` | Notification identifier or `nil, reason`. |
+| `requireCharacterReady(playerId, options?)` | Whether `bt_core` has an attached character. |
+| `zoneLookup(entries, x, y, z)` | Attributes of the first containing normalized zone. |
+| `formatEddies(amount)` | Integer amount formatted as `$eb`. |
+
+Do not proxy arbitrary resource exports through a helper: direct calls preserve
+`GetInvokingResource()`, authorization and audit attribution.

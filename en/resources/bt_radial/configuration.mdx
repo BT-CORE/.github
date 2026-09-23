@@ -1,0 +1,15 @@
+---
+title: "Configure bt_radial"
+description: "Hold key and neutral-zone settings."
+icon: "sliders"
+---
+
+`shared/config.lua` exposes:
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `Config.openKey` | `"CTRL"` | Rebindable hold key; empty disables mapping. |
+| `Config.deadZone` | `72` | Neutral radius on the 1920×1080 reference surface. |
+
+The dead zone is a design reference, not a fixed screen assumption: the WebUI
+scales it with the actual viewport.

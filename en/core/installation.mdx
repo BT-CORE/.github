@@ -5,7 +5,7 @@ icon: "download"
 ---
 
 <Warning>
-This page documents the `0.8.3` development candidate. Its runtime release has
+This page documents the `0.8.4` development candidate. Its runtime release has
 not been published yet. Do not combine these instructions with the older
 `0.8.2` package without checking that version's manifest.
 </Warning>
@@ -14,9 +14,10 @@ not been published yet. Do not combine these instructions with the older
 
 - an Open2077 server compatible with `open77_version ">=0.0.1"`;
 - a MariaDB database reachable from the dedicated-server process;
+- `bt_inventory >=0.1.0` and its `open77_weapons >=0.1.0` dependency;
 - permission to edit `server.jsonc` and restart the complete server.
 
-`bt_core` has no dependency on another BT CORE resource.
+`bt_core` requires `bt_inventory`.
 
 ## 1. Load the resource
 
@@ -30,6 +31,8 @@ Place the release at `resources/bt_core/`, then add `bt_core` to the existing
     "root": "resources",
     "load": [
       "open77_*",
+      "open77_weapons",
+      "bt_inventory",
       "bt_core"
     ]
   }
@@ -140,5 +143,5 @@ Reloading only `bt_core` does not recreate the server-wide database bridge.
 
 ## Load order
 
-Load `bt_core` before every resource that calls its exports. Add each future BT
-CORE resource after its declared dependencies.
+Load `open77_weapons`, then `bt_inventory`, then `bt_core`. Resources that
+call core exports load after `bt_core`.

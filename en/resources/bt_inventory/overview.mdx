@@ -1,0 +1,35 @@
+---
+title: "bt_inventory"
+description: "Authoritative item, weapon and registered-storage service with a responsive drag-and-drop WebUI."
+icon: "boxes-stacked"
+---
+
+<Warning>
+Version `0.1.0` is a private preview and is not a production release.
+</Warning>
+
+`bt_inventory` owns player inventories, registered shared or scoped storages,
+items, weapons, slot layout and persistence. `bt_core` attaches the active
+character and keeps deprecated item-count adapters for older scripts.
+
+## Capabilities
+
+- runtime item registration owned by the registering resource;
+- shared and per-scope inventories with live limits and allowlists;
+- idempotent mutations through caller-owned `operationId` values;
+- explicit item and weapon APIs;
+- hot slot/unit limit changes without deleting overflow possessions;
+- responsive WebUI, pointer drag-and-drop, manual slot swaps and auto-sort;
+- English default with English and French locale catalogs.
+
+Unknown legacy records are preserved in quarantine. A client is never trusted
+to establish that a record exists or whether it is an item or a weapon.
+
+## Dependencies
+
+- Open77 `>=0.0.1`;
+- `open77_weapons >=0.1.0`;
+- the server database bridge.
+
+Ground drops are intentionally unavailable until an authoritative
+`open77_loot` integration is installed. A refused drop never removes an item.

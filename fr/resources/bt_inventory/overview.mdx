@@ -1,0 +1,36 @@
+---
+title: "bt_inventory"
+description: "Service autoritaire d'objets, armes et stockages enregistrés avec WebUI drag & drop responsive."
+icon: "boxes-stacked"
+---
+
+<Warning>
+La version `0.1.0` est une prépublication privée, pas une release de production.
+</Warning>
+
+`bt_inventory` possède les inventaires joueur, les stockages partagés ou
+scopés, les objets, les armes, les slots et leur persistance. `bt_core`
+attache le personnage actif et conserve des adaptateurs dépréciés pour les
+anciens scripts.
+
+## Capacités
+
+- enregistrement en mémoire d'objets appartenant à la ressource appelante ;
+- inventaires partagés ou par scope, limites et listes autorisées modifiables à chaud ;
+- mutations idempotentes avec `operationId` ;
+- API distinctes objets/armes ;
+- baisse de limite sans suppression des possessions en dépassement ;
+- WebUI responsive, drag & drop pointeur, échange de slots et rangement automatique ;
+- anglais par défaut, catalogues anglais et français.
+
+Les records legacy inconnus restent en quarantaine. Le client ne décide jamais
+de l'existence ni du type d'un record.
+
+## Dépendances
+
+- Open77 `>=0.0.1` ;
+- `open77_weapons >=0.1.0` ;
+- le bridge de base de données serveur.
+
+Le dépôt au sol reste désactivé sans intégration autoritaire
+`open77_loot`. Un refus ne retire jamais l'objet.

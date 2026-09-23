@@ -52,6 +52,34 @@
               },
               "en/core/events-permissions"
             ]
+          },
+          {
+            "group": "bt_inventory",
+            "tag": "PREVIEW",
+            "pages": [
+              "en/resources/bt_inventory/overview",
+              "en/resources/bt_inventory/configuration",
+              "en/resources/bt_inventory/client-api",
+              "en/resources/bt_inventory/server-api"
+            ]
+          },
+          {
+            "group": "bt_lib",
+            "tag": "PREVIEW",
+            "pages": [
+              "en/resources/bt_lib/overview",
+              "en/resources/bt_lib/client-api",
+              "en/resources/bt_lib/server-api"
+            ]
+          },
+          {
+            "group": "bt_radial",
+            "tag": "PREVIEW",
+            "pages": [
+              "en/resources/bt_radial/overview",
+              "en/resources/bt_radial/configuration",
+              "en/resources/bt_radial/client-api"
+            ]
           }
         ]
       },
@@ -94,6 +122,34 @@
                 ]
               },
               "fr/core/events-permissions"
+            ]
+          },
+          {
+            "group": "bt_inventory",
+            "tag": "APERÇU",
+            "pages": [
+              "fr/resources/bt_inventory/overview",
+              "fr/resources/bt_inventory/configuration",
+              "fr/resources/bt_inventory/client-api",
+              "fr/resources/bt_inventory/server-api"
+            ]
+          },
+          {
+            "group": "bt_lib",
+            "tag": "APERÇU",
+            "pages": [
+              "fr/resources/bt_lib/overview",
+              "fr/resources/bt_lib/client-api",
+              "fr/resources/bt_lib/server-api"
+            ]
+          },
+          {
+            "group": "bt_radial",
+            "tag": "APERÇU",
+            "pages": [
+              "fr/resources/bt_radial/overview",
+              "fr/resources/bt_radial/configuration",
+              "fr/resources/bt_radial/client-api"
             ]
           }
         ]

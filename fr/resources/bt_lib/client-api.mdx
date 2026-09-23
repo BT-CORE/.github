@@ -1,0 +1,20 @@
+---
+title: "Modules client bt_lib"
+description: "Raycasts, entités, vecteurs, personnage, formatage et cycle WebUI."
+icon: "display"
+---
+
+`require("@bt_lib")` fournit :
+
+- `raycast` : rayons, dégagements, empreinte orientée, sol, picking écran ;
+- `entities` : nearby/nearest et helpers de feux ;
+- `vectors` : distances, caps, yaw et offsets ;
+- `character.position()` ;
+- `format.eddies(amount)` ;
+- `webui` : création, readiness, envoi, focus et destruction.
+
+`webui.setFocus(keyboard, cursor)` respecte l'ordre officiel Open77.
+`setCursorFocus(want)` équivaut à `setFocus(false, want)`.
+
+La ressource importatrice doit déclarer les permissions exigées par les appels
+natifs qu'elle effectue via ces modules.

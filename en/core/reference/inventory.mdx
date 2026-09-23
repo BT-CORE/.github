@@ -1,10 +1,17 @@
 ---
 title: "Inventory"
-description: "Persistent item quantity contracts."
+description: "Deprecated bt_core compatibility adapters backed by bt_inventory."
 icon: "code"
 ---
 
-Call these server exports with `Open77.exports.call(...):await()`. Unless a section says otherwise, the player must have a loaded character.
+<Warning>
+These exports remain for backward compatibility. New integrations must depend
+on `bt_inventory` and use its item/weapon APIs.
+</Warning>
+
+Call these server exports with `Open77.exports.call(...):await()`. The player
+must have a loaded character. `bt_core` delegates every operation to
+`bt_inventory`.
 
 ## `getItem`
 

@@ -1,10 +1,17 @@
 ---
 title: "Inventaire"
-description: "Contrats des quantités d'objets persistants."
+description: "Adaptateurs de compatibilité bt_core dépréciés, adossés à bt_inventory."
 icon: "code"
 ---
 
-Appeler ces exports serveur avec `Open77.exports.call(...):await()`. Sauf indication contraire, le joueur doit posséder un personnage chargé.
+<Warning>
+Ces exports restent disponibles pour la rétrocompatibilité. Toute nouvelle
+intégration doit dépendre de `bt_inventory` et utiliser ses API objets/armes.
+</Warning>
+
+Appeler ces exports serveur avec `Open77.exports.call(...):await()`. Le joueur
+doit posséder un personnage chargé. `bt_core` délègue chaque opération à
+`bt_inventory`.
 
 ## `getItem`
 

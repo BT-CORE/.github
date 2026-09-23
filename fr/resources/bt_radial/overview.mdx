@@ -1,0 +1,17 @@
+---
+title: "bt_radial"
+description: "Radial responsive pour les armes équipées, le téléphone et l'inventaire."
+icon: "circle-dot"
+---
+
+<Warning>La version `0.1.0` est en prépublication.</Warning>
+
+Maintenir la touche configurée, sortir du centre neutre pour sélectionner,
+cliquer pour valider ou relâcher pour fermer sans action. Les armes proviennent
+du snapshot officiel Open77.
+
+Dépendances : `bt_core >=0.8.1`, `open77_weapons >=0.1.0`,
+`bt_phone >=0.1.0` et `bt_inventory >=0.1.0`.
+
+La surface hérite du viewport du joueur. Le radial et sa zone morte sont
+recalculés depuis `innerWidth` et `innerHeight` ; ce composant reste centré.

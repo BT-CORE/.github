@@ -1,0 +1,29 @@
+---
+title: "bt_inventory client API"
+description: "Open the inventory and read the latest server-published snapshot."
+icon: "display"
+---
+
+## `toggle()`
+
+Opens or closes the player's inventory after verifying `bt_core.isReady`.
+
+```lua
+local opened, reason = Open77.exports.call("bt_inventory", "toggle"):await()
+```
+
+## `snapshot()`
+
+Returns a defensive copy of the latest complete snapshot published by the
+server. Re-run the export whenever a fresh value is required; returned tables
+are never live references.
+
+```lua
+local snapshot = Open77.exports.call("bt_inventory", "snapshot"):await()
+if snapshot then
+    print(snapshot.revision, #snapshot.entries)
+end
+```
+
+The cache is cleared when the character session detaches. UI pages remain
+separately paginated at 32 slots.

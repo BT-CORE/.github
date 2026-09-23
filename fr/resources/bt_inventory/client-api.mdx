@@ -1,0 +1,26 @@
+---
+title: "API client bt_inventory"
+description: "Ouvrir l'inventaire et lire le dernier snapshot serveur."
+icon: "display"
+---
+
+## `toggle()`
+
+Ouvre ou ferme l'inventaire après vérification de `bt_core.isReady`.
+
+```lua
+local ouvert, raison = Open77.exports.call("bt_inventory", "toggle"):await()
+```
+
+## `snapshot()`
+
+Retourne une copie défensive du dernier snapshot complet publié par le serveur.
+Il faut rappeler l'export pour relire la valeur courante.
+
+```lua
+local snapshot = Open77.exports.call("bt_inventory", "snapshot"):await()
+if snapshot then print(snapshot.revision, #snapshot.entries) end
+```
+
+Le cache est vidé au détachement du personnage. Les pages de l'UI restent
+séparément limitées à 32 slots.

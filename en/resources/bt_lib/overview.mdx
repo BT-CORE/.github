@@ -1,0 +1,23 @@
+---
+title: "bt_lib"
+description: "Shared Lua modules and narrow server helpers for BT CORE resources."
+icon: "toolbox"
+---
+
+<Warning>Version `0.1.0` is a pre-release.</Warning>
+
+`bt_lib` removes duplicated low-level helpers while keeping business logic in
+the owning resource. Client modules execute inside the importing resource VM
+and therefore use that resource's permissions.
+
+Requirements: `bt_core >=0.8.1` and
+`open77_notifications >=1.0.0`.
+
+```lua
+dependency "bt_lib >=0.1.0"
+local BT = assert(require("@bt_lib"))
+```
+
+Fullscreen WebUI helpers omit width and height by default, so the surface uses
+the player's actual viewport. Explicit dimensions are reserved for deliberate
+technical textures.

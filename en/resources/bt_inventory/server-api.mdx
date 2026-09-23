@@ -1,0 +1,55 @@
+---
+title: "bt_inventory server API"
+description: "Registered inventories, runtime items, player helpers and mutation contracts."
+icon: "server"
+---
+
+Call exports with `Open77.exports.call("bt_inventory", name, ...):await()`.
+
+## Runtime items
+
+```lua
+local item = Open77.exports.call("bt_inventory", "registerItem", {
+    name = "example:medkit",
+    label = "Example Medkit",
+    usable = true,
+    stackable = true,
+    stackLimit = 10,
+    consumeOnUse = 1,
+    imageName = "example_medkit.png",
+    useExport = "useExampleMedkit",
+}):await()
+```
+
+Exports: `registerItem`, `unregisterItem`, `getRegisteredItem`,
+`listRegisteredItems`.
+
+## Registered inventories
+
+Definitions accept `id`, `name`, `slots`, `limit`, `acceptItems`,
+`acceptWeapons`, `shared` and `whitelist`.
+
+Exports: `registerInventory`, `inventoryExists`,
+`getInventoryDefinition`, `updateInventory`, `deleteInventory`,
+`setInventoryInstanceLimits`.
+
+## Contents
+
+- reads: `getInventory`, `getInventoryUsage`, `listInventoryItems`,
+  `listInventoryWeapons`, item/weapon count and total exports;
+- mutations: add/set/remove item, add/get/remove weapon, transfer, `moveEntry`,
+  `splitStack`, `mergeStacks`, `autoSort`;
+- UI: `openInventory(playerId, inventoryId, scope)`.
+
+Only the definition owner can mutate a registered inventory. Internal privilege
+flags are stripped from public options. Supply a stable unique `operationId`
+for mutations and use snapshot revisions for optimistic concurrency.
+
+## Player helpers
+
+`snapshot`, `getPlayerInventory`, item/weapon list and count exports,
+`addPlayerItem`, `addPlayerWeapon`, remove/set helpers, and hot
+`set/add/remove/resetPlayerSlots` / `PlayerLimit` exports are available.
+
+The character must already be attached by `bt_core`. One character can have
+only one active player binding.

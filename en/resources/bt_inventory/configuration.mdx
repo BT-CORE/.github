@@ -1,0 +1,26 @@
+---
+title: "Configure bt_inventory"
+description: "Player inventory defaults, UI key, operation bounds and item overrides."
+icon: "sliders"
+---
+
+Settings live in `server/config.lua`, which is shared with the client.
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `Config.language` | `"en"` | Fallback locale. |
+| `Config.openKey` | `"I"` | Rebindable inventory key; empty disables it. |
+| `Config.playerInventory.slots` | `30` | Maximum occupied stacks/unique weapons. |
+| `Config.playerInventory.limit` | `0` | Unit limit; `0` is unlimited. |
+| `Config.pageSize` / `maxPageSize` | `32` | UI page size and hard page bound. |
+| `Config.maxMetadataBytes` | `4096` | Maximum encoded metadata size. |
+| `Config.maxStacksPerOperation` | `256` | Maximum stacks created atomically. |
+
+Reducing a limit never deletes possessions. Overflow entries remain visible and
+movable, while new additions are refused until usage fits again.
+
+`Config.ItemsOverride` may override presentation or stack rules for official
+server-recognized records. Custom records must use `registerItem`.
+
+Place custom images in `items_assets`. A local matching basename overrides the
+fallback asset.

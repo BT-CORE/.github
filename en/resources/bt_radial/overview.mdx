@@ -1,0 +1,18 @@
+---
+title: "bt_radial"
+description: "Viewport-responsive radial for equipped weapons, phone and inventory."
+icon: "circle-dot"
+---
+
+<Warning>Version `0.1.0` is a pre-release.</Warning>
+
+Hold the configured key, move away from the neutral center to select a tile,
+click to confirm, or release to close without applying. Equipped weapons come
+from the official Open77 weapon snapshot.
+
+Dependencies: `bt_core >=0.8.1`, `open77_weapons >=0.1.0`,
+`bt_phone >=0.1.0`, and `bt_inventory >=0.1.0`.
+
+The surface inherits the player's viewport. The wheel scale and dead zone are
+recomputed from `innerWidth` and `innerHeight`; it remains centered rather
+than adopting the left-side optical-window layout.

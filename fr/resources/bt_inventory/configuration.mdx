@@ -1,0 +1,28 @@
+---
+title: "Configurer bt_inventory"
+description: "Inventaire joueur, touche UI, bornes d'opérations et overrides."
+icon: "sliders"
+---
+
+La configuration vit dans `server/config.lua`, partagé avec le client.
+
+| Réglage | Défaut | Rôle |
+| --- | --- | --- |
+| `Config.language` | `"en"` | Langue de repli. |
+| `Config.openKey` | `"I"` | Touche reconfigurable ; vide la désactive. |
+| `Config.playerInventory.slots` | `30` | Piles/armes uniques occupées. |
+| `Config.playerInventory.limit` | `0` | Limite d'unités ; `0` = illimitée. |
+| `Config.pageSize` / `maxPageSize` | `32` | Taille de page UI et borne. |
+| `Config.maxMetadataBytes` | `4096` | Taille JSON maximale des métadonnées. |
+| `Config.maxStacksPerOperation` | `256` | Piles maximales par mutation atomique. |
+
+Réduire une limite ne supprime rien. Les entrées en dépassement restent
+visibles et déplaçables ; les nouveaux ajouts sont refusés jusqu'au retour
+sous la limite.
+
+`Config.ItemsOverride` modifie la présentation ou les règles de pile d'un
+record officiel reconnu côté serveur. Un record personnalisé passe par
+`registerItem`.
+
+Les images personnalisées vont dans `items_assets` et remplacent le fallback
+quand leur basename correspond.
