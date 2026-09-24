@@ -10,6 +10,16 @@
   "styling": {
     "eyebrows": "breadcrumbs"
   },
+  "redirects": [
+    {
+      "source": "/en/resources/bt_lib/client-api",
+      "destination": "/en/resources/bt_lib/client-raycast"
+    },
+    {
+      "source": "/en/resources/bt_radial/client-api",
+      "destination": "/en/resources/bt_radial/events"
+    }
+  ],
   "navigation": {
     "languages": [
       {
@@ -68,8 +78,24 @@
             "tag": "PREVIEW",
             "pages": [
               "en/resources/bt_lib/overview",
-              "en/resources/bt_lib/client-api",
-              "en/resources/bt_lib/server-api"
+              {
+                "group": "Client modules",
+                "icon": "display",
+                "pages": [
+                  "en/resources/bt_lib/client-raycast",
+                  "en/resources/bt_lib/client-entities",
+                  "en/resources/bt_lib/client-vectors",
+                  "en/resources/bt_lib/client-utilities",
+                  "en/resources/bt_lib/client-webui"
+                ]
+              },
+              {
+                "group": "Server exports",
+                "icon": "server",
+                "pages": [
+                  "en/resources/bt_lib/server-api"
+                ]
+              }
             ]
           },
           {
@@ -78,78 +104,7 @@
             "pages": [
               "en/resources/bt_radial/overview",
               "en/resources/bt_radial/configuration",
-              "en/resources/bt_radial/client-api"
-            ]
-          }
-        ]
-      },
-      {
-        "language": "fr",
-        "groups": [
-          {
-            "group": "Écosystème BT CORE",
-            "pages": [
-              "fr/index",
-              "fr/resources/catalog"
-            ]
-          },
-          {
-            "group": "bt_core",
-            "tag": "APERÇU",
-            "pages": [
-              "fr/core/installation",
-              "fr/core/configuration",
-              {
-                "group": "Exports client",
-                "icon": "display",
-                "pages": [
-                  "fr/core/reference/client",
-                  "fr/core/reference/client-ui"
-                ]
-              },
-              {
-                "group": "Exports serveur",
-                "icon": "server",
-                "pages": [
-                  "fr/core/reference/identity",
-                  "fr/core/reference/economy",
-                  "fr/core/reference/inventory",
-                  "fr/core/reference/jobs",
-                  "fr/core/reference/progression-vehicles",
-                  "fr/core/reference/vehicles",
-                  "fr/core/reference/access-player-data",
-                  "fr/core/reference/player-data"
-                ]
-              },
-              "fr/core/events-permissions"
-            ]
-          },
-          {
-            "group": "bt_inventory",
-            "tag": "APERÇU",
-            "pages": [
-              "fr/resources/bt_inventory/overview",
-              "fr/resources/bt_inventory/configuration",
-              "fr/resources/bt_inventory/client-api",
-              "fr/resources/bt_inventory/server-api"
-            ]
-          },
-          {
-            "group": "bt_lib",
-            "tag": "APERÇU",
-            "pages": [
-              "fr/resources/bt_lib/overview",
-              "fr/resources/bt_lib/client-api",
-              "fr/resources/bt_lib/server-api"
-            ]
-          },
-          {
-            "group": "bt_radial",
-            "tag": "APERÇU",
-            "pages": [
-              "fr/resources/bt_radial/overview",
-              "fr/resources/bt_radial/configuration",
-              "fr/resources/bt_radial/client-api"
+              "en/resources/bt_radial/events"
             ]
           }
         ]

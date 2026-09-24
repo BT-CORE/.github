@@ -1,0 +1,77 @@
+---
+title: "Client modules: character and format"
+description: "Local character position and currency formatting."
+icon: "user"
+---
+
+Import the module in a client script:
+
+```lua
+local BT = assert(require("@bt_lib"))
+local character = BT.character
+```
+
+The module runs in the importing resource's VM, so `character.position` needs the permissions required by `Open77.character.state`. `format` needs no permission. Access the second module as `BT.format`.
+
+## `character.position`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the local character position. The call is wrapped in a `pcall`, so callers never receive a Lua error.
+
+### Inputs
+
+None.
+
+### Example
+
+```lua
+--- character.position()
+
+local position = character.position()
+if not position then return end
+```
+
+### Returns
+
+<ResponseField name="position" type="Vec3 | nil" post={["optional"]}>
+  Local character position. `nil` when `Open77.character` is unavailable, the call fails, or no position is reported.
+
+  <Expandable title="Show Vec3 fields">
+    <ResponseField name="x" type="number" required>
+      World X coordinate.
+    </ResponseField>
+    <ResponseField name="y" type="number" required>
+      World Y coordinate.
+    </ResponseField>
+    <ResponseField name="z" type="number" required>
+      World Z coordinate.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `format.eddies`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Formats an amount as eddies (`$eb`).
+
+### Inputs
+
+<ParamField body="amount" type="number | string" required>
+  Amount to format. A value that cannot be converted to a number counts as `0`. Fractions are rounded down.
+</ParamField>
+
+### Example
+
+```lua
+--- format.eddies(amount)
+
+local text = BT.format.eddies(1500)
+```
+
+### Returns
+
+<ResponseField name="text" type="string" required>
+  Formatted amount, for example `"1500$eb"`.
+</ResponseField>

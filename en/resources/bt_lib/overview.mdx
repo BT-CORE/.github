@@ -1,23 +1,107 @@
 ---
 title: "bt_lib"
-description: "Shared Lua modules and narrow server helpers for BT CORE resources."
+description: "Shared client modules and server helpers used by BT CORE resources."
 icon: "toolbox"
 ---
 
-<Warning>Version `0.1.0` is a pre-release.</Warning>
+<Note>
+**Preview.** This page documents the `0.1.0` source version. Do not treat it as
+the current release until the `bt_lib` repository has received this version.
+</Note>
 
-`bt_lib` removes duplicated low-level helpers while keeping business logic in
-the owning resource. Client modules execute inside the importing resource VM
-and therefore use that resource's permissions.
+`bt_lib` removes duplicated low-level helpers from BT CORE resources while
+keeping business logic in the resource that owns it. It has two parts:
 
-Requirements: `bt_core >=0.8.1` and
-`open77_notifications >=1.0.0`.
+- **client modules**, imported with `require("@bt_lib")`, for rays and ground
+  clearance, nearby entities, vectors, the local character position, eddies
+  formatting and a full-screen WebUI surface;
+- **server exports**, called with `Open77.exports.call("bt_lib", ...)`, for
+  resource calls, notifications, character readiness, zone lookup and eddies
+  formatting.
+
+## Requirements
+
+- `bt_core >=0.8.1`;
+- an Open2077 server compatible with `open77_version ">=0.0.1"`.
+
+`bt_lib` does not require the optional notification package. `notify` returns
+`nil, "notifications_unavailable"` when the native notification API is missing.
+
+## Install
+
+Place the release at `resources/bt_lib/`, then add `bt_lib` to `resources.load`
+after `bt_core`. Merge the entry; do not replace the rest of your file.
+
+```jsonc
+{
+  "resources": {
+    "load": [
+      "open77_weapons",
+      "bt_inventory",
+      "bt_core",
+      "bt_lib"
+    ]
+  }
+}
+```
+
+Restart the dedicated server after changing `server.jsonc`. A resource that uses
+the client modules declares the dependency in its manifest:
 
 ```lua
 dependency "bt_lib >=0.1.0"
-local BT = assert(require("@bt_lib"))
 ```
 
-Fullscreen WebUI helpers omit width and height by default, so the surface uses
-the player's actual viewport. Explicit dimensions are reserved for deliberate
-technical textures.
+## Verify the installation
+
+At startup the server prints:
+
+```text
+[bt_lib] ready (callResource, notify, requireCharacterReady, zoneLookup, formatEddies)
+```
+
+## Permissions
+
+`bt_lib` declares exactly these manifest permissions:
+
+- `local.events`;
+- `network.events`.
+
+Client modules run in the importing resource's VM with **that resource's**
+permissions, never with those of `bt_lib`. A resource that calls `raycast` or
+`entities` declares `world.query`; one that calls `entities.nearestOwnProp`
+declares `world.props`.
+
+## Reference
+
+<CardGroup cols={2}>
+  <Card title="Server exports" icon="server" href="/en/resources/bt_lib/server-api">
+    Resource calls, notifications, character readiness, zones and formatting.
+  </Card>
+  <Card title="raycast" icon="crosshairs" href="/en/resources/bt_lib/client-raycast">
+    Rays, ground clearance, ground classification and camera picking.
+  </Card>
+  <Card title="entities" icon="magnifying-glass-location" href="/en/resources/bt_lib/client-entities">
+    Nearby entities, own props and traffic lights.
+  </Card>
+  <Card title="vectors" icon="arrows-up-down-left-right" href="/en/resources/bt_lib/client-vectors">
+    Distances, headings and forward offsets.
+  </Card>
+  <Card title="character and format" icon="user" href="/en/resources/bt_lib/client-utilities">
+    Local character position and eddies formatting.
+  </Card>
+  <Card title="webui" icon="window-maximize" href="/en/resources/bt_lib/client-webui">
+    Full-screen WebUI surface lifecycle, readiness, events and focus.
+  </Card>
+</CardGroup>
+
+## Known limits
+
+- `callResource` makes `bt_lib` the invoking resource. Call an export directly
+  when it authorizes or audits by `GetInvokingResource()`.
+- `entities.TRAFFIC_LIGHT_HASHES` was collected in game and is not exhaustive.
+  No documented API exposes a traffic light's color state.
+- `raycast.bestHeading` finds the most open direction. It does not detect the
+  traffic direction.
+- `webui.create` uses a `1920` by `1080` logical surface unless you pass
+  `width` and `height`.

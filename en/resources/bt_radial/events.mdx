@@ -1,0 +1,90 @@
+---
+title: "Events and integrations"
+description: "Network events, consumed events and the exports and events bt_radial calls."
+icon: "plug"
+---
+
+`bt_radial` publishes **no public export**. Its contracts are two network events
+between its own client and server, plus the events and exports of other resources
+that it consumes.
+
+## Network events
+
+### `bt_radial:requestAdminAccess`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Client-to-server event that asks the server to publish the admin-tile decision
+for the sender. The client sends it when the character becomes ready
+(`bt_core:client:ready`) and when `bt_core` reports a snapshot update
+(`bt_core:client:snapshotUpdated`).
+
+**Precondition:** the server ignores a request from the same player that arrives
+less than `500` ms after the previous one.
+
+#### Inputs
+
+None. The server uses the authenticated `source` and never trusts a payload.
+
+#### Returns
+
+None.
+
+### `bt_radial:adminAccess`
+
+<Badge color="purple" size="sm" shape="pill" stroke>SERVER</Badge>
+
+Server-to-client event that tells a client whether to show the ADMIN tile. The
+server sends it when a player requests it, when `bt_core:playerReady` or
+`bt_core:playerUpdated` fires, and reads the roles again through
+`bt_core.getRoles` each time instead of trusting an event payload.
+
+#### Inputs
+
+<ParamField body="payload" type="AdminAccess" required>
+  Admin-tile decision for the receiving player.
+
+  <Expandable title="Show AdminAccess fields">
+    <ParamField body="visible" type="boolean" required>
+      `true` when the character holds `owner`, `admin` or `moderator`. Role names
+      are trimmed and compared in lowercase.
+    </ParamField>
+    <ParamField body="roles" type="string[]" required>
+      Roles returned by `bt_core.getRoles`. Empty when they could not be read.
+    </ParamField>
+    <ParamField body="reason" type="string | nil">
+      `roles_unavailable` or the `bt_core` failure reason when roles could not be
+      read. `nil` on success.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+#### Returns
+
+None.
+
+## Events consumed
+
+- Server: `bt_core:playerReady`, `bt_core:playerUpdated` and `onPlayerDisconnected`
+  (which clears the per-player state).
+- Client: `bt_core:client:ready`, `bt_core:client:snapshotUpdated`,
+  `open77:weapons:state`, `open77:weapons:completed`, `open77:session:ended` and
+  `open77:pauseKey`. The last two close the wheel.
+
+## Calls to other resources
+
+- `bt_core.getRoles` (server, through `bt_lib.callResource`) reads the character
+  roles.
+- `bt_core.isReady` (client) checks readiness when the wheel opens.
+- `bt_phone.open("calls", true)` (client) opens the phone tile.
+- `bt_inventory.toggle` (client) opens the inventory tile.
+- `bt_admin:requestOpen` (server event) asks `bt_admin` to open. `bt_admin`
+  checks `command.btadmin` in the ACL before it opens.
+- `Open77.weapons.snapshot` and `Open77.weapons.setActive` read the equipped
+  weapons and equip a slot.
+
+## Key mapping
+
+`bt_radial_hold` is registered with `RegisterKeyMapping`. Its default key is
+`Config.openKey`. Pressing it opens the wheel and releasing it closes the wheel
+without applying anything.

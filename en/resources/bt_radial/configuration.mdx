@@ -1,15 +1,38 @@
 ---
 title: "Configure bt_radial"
-description: "Hold key and neutral-zone settings."
+description: "Hold key, neutral zone and language settings."
 icon: "sliders"
 ---
 
-`shared/config.lua` exposes:
+Settings live in `shared/config.lua`. Restart the server or the resource after
+changing them.
 
-| Setting | Default | Meaning |
-| --- | --- | --- |
-| `Config.openKey` | `"CTRL"` | Rebindable hold key; empty disables mapping. |
-| `Config.deadZone` | `72` | Neutral radius on the 1920×1080 reference surface. |
+<ParamField body="Config.openKey" type="string" default="CTRL">
+  Hold key that displays the radial. An empty string disables the key mapping.
+  Players can rebind the `bt_radial_hold` mapping in the game settings.
+</ParamField>
 
-The dead zone is a design reference, not a fixed screen assumption: the WebUI
-scales it with the actual viewport.
+<ParamField body="Config.deadZone" type="number" default="72">
+  Neutral radius in unscaled CSS pixels on the `1920` by `1080` reference
+  surface. The wheel only starts selecting after the pointer leaves this radius.
+  The WebUI scales the value to the player's viewport and clamps it between `30`
+  and `180`.
+</ParamField>
+
+<ParamField body="Config.language" type="string" default="en">
+  Language of the texts shown to players: tile labels, weapon stats, hints and
+  the key mapping description. Shipped languages: `en` and `fr`. An unknown value
+  falls back to `en` and logs one message.
+</ParamField>
+
+## Language catalogs
+
+Texts are stored in `lang/en.lua` and `lang/fr.lua`. Both files define the same
+keys. A key missing from the selected language falls back to English. To add a
+language, copy `lang/en.lua` to `lang/<code>.lua`, translate the values, define
+`BTLocales.<code>`, and load the file in `open77.lua` before `client/lang.lua`.
+
+<Note>
+The wheel is centered on the screen. It does not use the left-anchored optical
+window layout of the other BT CORE interfaces.
+</Note>

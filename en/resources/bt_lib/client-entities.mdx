@@ -1,0 +1,381 @@
+---
+title: "Client module: entities"
+description: "Nearby entity, prop and traffic-light queries."
+icon: "magnifying-glass-location"
+---
+
+Import the module in a client script:
+
+```lua
+local BT = assert(require("@bt_lib"))
+local entities = BT.entities
+```
+
+The module runs in the importing resource's VM, so the calling resource must declare `world.query` for `nearby`, `nearest` and the helpers built on them, and `world.props` for `nearestOwnProp`.
+
+## `entities.TRAFFIC_LIGHT_HASHES`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Constant set of class-name hashes recognized as traffic lights. The list was collected in game and is not exhaustive. No documented API exposes a light's color state.
+
+### Inputs
+
+None.
+
+### Example
+
+```lua
+--- entities.TRAFFIC_LIGHT_HASHES()
+
+local isKnownLight = entities.TRAFFIC_LIGHT_HASHES["2925920759146092733"] == true
+```
+
+### Returns
+
+<ResponseField name="hashes" type={"object<string, boolean>"} required>
+  Decimal class-name hash mapped to `true`.
+</ResponseField>
+
+## `entities.nearby`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Lists objects around the local player, nearest first. The search is centered on the local player and capped at 1000 meters.
+
+**Precondition:** The calling resource declares the `world.query` permission. A live game instance is required. The first call in a session can answer `part_layout_not_proven`; try again later.
+
+### Inputs
+
+<ParamField body="radius" type="number" required>
+  Search radius in meters. Greater than `0` and at most `1000`.
+</ParamField>
+
+<ParamField body="filter" type="string | string[] | integer" default="nil">
+  Optional. Class name, list of names or raw mask, as accepted by `Open77.world.nearby`. When omitted, every class is returned.
+</ParamField>
+
+### Example
+
+```lua
+--- entities.nearby(radius, filter)
+
+local hits, reason = entities.nearby(30, "device")
+```
+
+### Returns
+
+<ResponseField name="hits" type="NearbyHit[] | nil" post={["optional"]}>
+  Objects sorted by distance, or `nil` on failure.
+
+  <Expandable title="Show NearbyHit fields">
+    <ResponseField name="engineEntity" type="string | integer" required>
+      Stable engine identifier. Treat it as opaque and compare it as a string.
+    </ResponseField>
+    <ResponseField name="className" type="string | integer" required>
+      Engine class name or hash. Compare it as a string.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3" required>
+      Object position.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="distance" type="number" required>
+      Distance from the local player in meters.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="reason" type="string | nil" post={["optional"]}>
+  Failure reason, for example `permission_denied:world.query`, `invalid_radius`, `invalid_filter`, `player_unavailable` or `part_layout_not_proven`.
+</ResponseField>
+
+## `entities.nearest`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the object nearest to the local player within a radius.
+
+**Precondition:** The calling resource declares the `world.query` permission. A live game instance is required.
+
+### Inputs
+
+<ParamField body="radius" type="number" required>
+  Search radius in meters. Greater than `0` and at most `1000`.
+</ParamField>
+
+<ParamField body="filter" type="string | string[] | integer" default="nil">
+  Optional. Class name, list of names or raw mask, as accepted by `Open77.world.nearest`. When omitted, every class is searched.
+</ParamField>
+
+### Example
+
+```lua
+--- entities.nearest(radius, filter)
+
+local hit = entities.nearest(5)
+```
+
+### Returns
+
+<ResponseField name="hit" type="NearbyHit | nil" post={["optional"]}>
+  Nearest object, or `nil` when none is found or the query failed.
+
+  <Expandable title="Show NearbyHit fields">
+    <ResponseField name="engineEntity" type="string | integer" required>
+      Stable engine identifier. Treat it as opaque and compare it as a string.
+    </ResponseField>
+    <ResponseField name="className" type="string | integer" required>
+      Engine class name or hash. Compare it as a string.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3" required>
+      Object position.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="distance" type="number" required>
+      Distance from the local player in meters.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="reason" type="string | nil" post={["optional"]}>
+  Failure reason returned by `Open77.world.nearest`.
+</ResponseField>
+
+## `entities.nearbyByHash`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Filters `nearby` results to the objects whose `className` matches one of the given hashes. Comparison is done on strings, so it stays valid whether the engine returns a number or a decimal string.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="radius" type="number" required>
+  Search radius in meters.
+</ParamField>
+
+<ParamField body="hashes" type={"object<string, boolean> | string[] | string | integer"} required>
+  Hash set (`hash -> true`), list of hashes, or a single hash.
+</ParamField>
+
+<ParamField body="filter" type="string | string[] | integer" default="nil">
+  Optional. Filter forwarded to `nearby`.
+</ParamField>
+
+### Example
+
+```lua
+--- entities.nearbyByHash(radius, hashes, filter)
+
+local lights = entities.nearbyByHash(30, entities.TRAFFIC_LIGHT_HASHES)
+```
+
+### Returns
+
+<ResponseField name="hits" type="NearbyHit[]" required>
+  Matching objects, nearest first. An empty list when none matches or when `nearby` fails.
+
+  <Expandable title="Show NearbyHit fields">
+    <ResponseField name="engineEntity" type="string | integer" required>
+      Stable engine identifier. Treat it as opaque and compare it as a string.
+    </ResponseField>
+    <ResponseField name="className" type="string | integer" required>
+      Engine class name or hash. Compare it as a string.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3" required>
+      Object position.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="distance" type="number" required>
+      Distance from the local player in meters.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `entities.nearestTrafficLight`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the nearest known traffic light, matched against `TRAFFIC_LIGHT_HASHES`.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="radius" type="number" default="30">
+  Optional. Search radius in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- entities.nearestTrafficLight(radius)
+
+local light = entities.nearestTrafficLight(20)
+```
+
+### Returns
+
+<ResponseField name="hit" type="NearbyHit | nil" post={["optional"]}>
+  Nearest traffic light, or `nil` when none is found.
+
+  <Expandable title="Show NearbyHit fields">
+    <ResponseField name="engineEntity" type="string | integer" required>
+      Stable engine identifier. Treat it as opaque and compare it as a string.
+    </ResponseField>
+    <ResponseField name="className" type="string | integer" required>
+      Engine class name or hash. Compare it as a string.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3" required>
+      Object position.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="distance" type="number" required>
+      Distance from the local player in meters.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `entities.nearestOwnProp`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the nearest local prop owned by the calling resource. The search never includes props from other resources.
+
+**Precondition:** The calling resource declares the `world.props` permission.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" required>
+  Search origin.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="radius" type="number" default="10">
+  Optional. Search radius in meters. A non-positive or non-finite value is rejected. When omitted, the platform default of `10` is used.
+</ParamField>
+
+### Example
+
+```lua
+--- entities.nearestOwnProp(position, radius)
+
+local prop, distance = entities.nearestOwnProp(Open77.character.state().position, 3)
+```
+
+### Returns
+
+<ResponseField name="prop" type="PropSnapshot | nil" post={["optional"]}>
+  Prop snapshot, or `nil` when none is found or the arguments are rejected.
+
+  <Expandable title="Show PropSnapshot fields">
+    <ResponseField name="model" type="string" required>
+      Prop model.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3" required>
+      Prop position.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="distance" type="number | nil" post={["optional"]}>
+  Distance to the prop in meters. `nil` when no prop is returned.
+</ResponseField>
+
+## `entities.debugDumpNearby`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Prints every object seen by `nearby` to the console, as `[bt_lib] <engineEntity> className=<className> dist=<meters>m`. Use it to find the hash of a new entity by hand.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="radius" type="number" default="30">
+  Optional. Search radius in meters.
+</ParamField>
+
+<ParamField body="filter" type="string | string[] | integer" default="nil">
+  Optional. Filter forwarded to `nearby`.
+</ParamField>
+
+### Example
+
+```lua
+--- entities.debugDumpNearby(radius, filter)
+
+entities.debugDumpNearby(15)
+```
+
+### Returns
+
+None.

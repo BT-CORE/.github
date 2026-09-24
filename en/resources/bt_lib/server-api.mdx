@@ -1,17 +1,235 @@
 ---
-title: "bt_lib server exports"
-description: "Notifications, readiness gates, zone lookup and currency formatting."
+title: "Server exports"
+description: "Resource calls, notifications, character readiness, zone lookup and currency formatting."
 icon: "server"
 ---
 
-Available exports:
+Call these exports from another server script with
+`Open77.exports.call("bt_lib", name, ...):await()`. The call must run inside a
+thread or event handler so that `await()` can yield.
 
-| Export | Result |
-| --- | --- |
-| `notify(playerId, kind, title, message, durationMs?)` | Notification identifier or `nil, reason`. |
-| `requireCharacterReady(playerId, options?)` | Whether `bt_core` has an attached character. |
-| `zoneLookup(entries, x, y, z)` | Attributes of the first containing normalized zone. |
-| `formatEddies(amount)` | Integer amount formatted as `$eb`. |
+## `callResource`
 
-Do not proxy arbitrary resource exports through a helper: direct calls preserve
-`GetInvokingResource()`, authorization and audit attribution.
+<Badge color="purple" size="sm" shape="pill" stroke>SERVER</Badge>
+
+Calls an export of another resource and awaits its result. A dispatch failure (missing promise, stopped or absent resource) and a promise rejection are both returned as `nil, reason`.
+
+**Precondition:** Prefer a direct `Open77.exports.call` when the target export uses `GetInvokingResource()` for authorization or audit: the target sees `bt_lib` as the caller.
+
+### Inputs
+
+<ParamField body="resourceName" type="string" required>
+  Resource that owns the export.
+</ParamField>
+
+<ParamField body="exportName" type="string" required>
+  Name of the export to call.
+</ParamField>
+
+<ParamField body="..." type="any" default="none">
+  Optional. Arguments forwarded unchanged to the export. When omitted, none are sent.
+</ParamField>
+
+### Example
+
+```lua
+--- callResource(resourceName, exportName, ...)
+
+local ready = Open77.exports.call("bt_lib", "callResource", "bt_core", "isReady", playerId):await()
+```
+
+### Returns
+
+<ResponseField name="result" type="any | nil" post={["optional"]}>
+  First value returned by the target export, or `nil` when the call failed or the export returned nothing.
+</ResponseField>
+
+<ResponseField name="reason" type="string | nil" post={["optional"]}>
+  Failure reason when the call could not complete. `nil` on success.
+</ResponseField>
+
+### Failures
+
+The reason strings come from `Open77.exports.call` or from the promise rejection. `bt_lib` does not define its own codes.
+
+## `notify`
+
+<Badge color="purple" size="sm" shape="pill" stroke>SERVER</Badge>
+
+Sends a standard notification to a player through the native `Open77.notifications` API. The optional notification package renders it when installed; `bt_lib` does not require that package to start.
+
+**Precondition:** `Open77.notifications.send` must be available on the host. Otherwise the export returns `nil, "notifications_unavailable"`.
+
+### Inputs
+
+<ParamField body="playerId" type="integer" required>
+  Runtime player identifier.
+</ParamField>
+
+<ParamField body="kind" type="string" required>
+  Notification type passed as the `type` field of `Open77.notifications.send`, for example `"success"` or `"error"`.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Notification title.
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  Notification body.
+</ParamField>
+
+<ParamField body="durationMs" type="integer" default="4500">
+  Optional. Display duration in milliseconds. When omitted, `4500` is used.
+</ParamField>
+
+### Example
+
+```lua
+--- notify(playerId, kind, title, message, durationMs)
+
+Open77.exports.call("bt_lib", "notify", playerId, "success", "Bank", "Transfer complete"):await()
+```
+
+### Returns
+
+<ResponseField name="ok" type="boolean | nil" post={["optional"]}>
+  Result of `Open77.notifications.send`. `nil` when the notification API is unavailable.
+</ResponseField>
+
+<ResponseField name="reason" type="string | nil" post={["optional"]}>
+  Failure reason. `"notifications_unavailable"` when the API is missing; otherwise the reason returned by `Open77.notifications.send`.
+</ResponseField>
+
+### Failures
+
+A refused notification is also logged once per call as `[bt_lib] notification refused for player=<id>: <reason>`.
+
+## `requireCharacterReady`
+
+<Badge color="purple" size="sm" shape="pill" stroke>SERVER</Badge>
+
+Checks whether a player's character is ready by calling `bt_core.isReady`. Unless `silent` is set, the player receives an error notification when the character is not ready.
+
+**Precondition:** `bt_core` is running. When the `bt_core` call fails, the character counts as not ready.
+
+### Inputs
+
+<ParamField body="playerId" type="integer" required>
+  Runtime player identifier.
+</ParamField>
+
+<ParamField body="notifyOptions" type="RequireCharacterOptions" default="nil">
+  Optional. Failure notification options. When omitted, the player is notified with the default title and message.
+
+  <Expandable title="Show RequireCharacterOptions fields">
+    <ParamField body="silent" type="boolean" default="false">
+      Optional. When `true`, the player is not notified on failure.
+    </ParamField>
+    <ParamField body="title" type="string" default="Character">
+      Optional. Notification title.
+    </ParamField>
+    <ParamField body="message" type="string" default="Your character is not ready yet.">
+      Optional. Notification body.
+    </ParamField>
+    <ParamField body="durationMs" type="integer" default="4500">
+      Optional. Notification duration in milliseconds.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- requireCharacterReady(playerId, notifyOptions)
+
+local ready = Open77.exports.call("bt_lib", "requireCharacterReady", playerId, { silent = true }):await()
+if not ready then return end
+```
+
+### Returns
+
+<ResponseField name="ready" type="boolean" required>
+  `true` when `bt_core.isReady` returned a truthy value. `false` otherwise, including when the call failed.
+</ResponseField>
+
+## `zoneLookup`
+
+<Badge color="purple" size="sm" shape="pill" stroke>SERVER</Badge>
+
+Returns the attributes of the first zone that contains a point. The first matching zone wins and attributes are never merged.
+
+**Precondition:** `Open77.zones.contains` must be available on the host.
+
+### Inputs
+
+<ParamField body="entries" type="ZoneEntry[]" required>
+  Ordered zone entries. The order defines the priority.
+
+  <Expandable title="Show ZoneEntry fields">
+    <ParamField body="zone" type="NormalizedZone" required>
+      Zone normalized with `Open77.zones.normalize`.
+    </ParamField>
+    <ParamField body="attributes" type="any">
+      Data returned when the point is inside the zone. Any Lua value.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="x" type="number" required>
+  World X coordinate.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  World Y coordinate.
+</ParamField>
+
+<ParamField body="z" type="number" required>
+  World Z coordinate.
+</ParamField>
+
+### Example
+
+```lua
+--- zoneLookup(entries, x, y, z)
+
+local zone = Open77.zones.normalize({ type = "sphere", x = 0, y = 0, z = 0, radius = 50 })
+local attributes = Open77.exports.call("bt_lib", "zoneLookup", {
+  { zone = zone, attributes = { multiplier = 1.5 } },
+}, 10, 5, 0):await()
+```
+
+### Returns
+
+<ResponseField name="attributes" type="any | nil" post={["optional"]}>
+  Attributes of the first matching entry. `nil` when no zone matches, `entries` is not a table, or the zone API is unavailable.
+</ResponseField>
+
+### Failures
+
+An entry whose zone check raises an error is skipped. The export does not return a distinct error code.
+
+## `formatEddies`
+
+<Badge color="purple" size="sm" shape="pill" stroke>SERVER</Badge>
+
+Formats an amount as eddies (`$eb`) for server-composed notifications. It matches `format.eddies` on the client.
+
+### Inputs
+
+<ParamField body="amount" type="number | string" required>
+  Amount to format. A value that cannot be converted to a number counts as `0`. Fractions are rounded down.
+</ParamField>
+
+### Example
+
+```lua
+--- formatEddies(amount)
+
+local text = Open77.exports.call("bt_lib", "formatEddies", 1500):await()
+```
+
+### Returns
+
+<ResponseField name="text" type="string" required>
+  Formatted amount, for example `"1500$eb"`.
+</ResponseField>

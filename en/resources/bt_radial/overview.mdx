@@ -1,18 +1,122 @@
 ---
 title: "bt_radial"
-description: "Viewport-responsive radial for equipped weapons, phone and inventory."
+description: "Centered radial for equipped weapons, phone, inventory and staff access."
 icon: "circle-dot"
 ---
 
-<Warning>Version `0.1.0` is a pre-release.</Warning>
+<Note>
+**Preview.** This page documents the `0.2.1` source version. Do not treat it as
+the current release until the `bt_radial` repository has received this version.
+</Note>
 
-Hold the configured key, move away from the neutral center to select a tile,
-click to confirm, or release to close without applying. Equipped weapons come
-from the official Open77 weapon snapshot.
+`bt_radial` is a centered quick-selection wheel. Hold a key, move the mouse in
+the direction of a tile, then click to apply it. Releasing the key closes the
+wheel without applying anything.
 
-Dependencies: `bt_core >=0.8.1`, `open77_weapons >=0.1.0`,
-`bt_phone >=0.1.0`, and `bt_inventory >=0.1.0`.
+## Tiles
 
-The surface inherits the player's viewport. The wheel scale and dead zone are
-recomputed from `innerWidth` and `innerHeight`; it remains centered rather
-than adopting the left-side optical-window layout.
+- **Weapons.** Up to three equipped weapons, read from the official
+  `Open77.weapons.snapshot()`. Selecting one equips that slot. Hovering a weapon
+  shows a stats bubble drawn in the WebUI from the weapon record and the
+  snapshot: type, quality, manufacturer, ammunition and state. Combat stats
+  such as damage or range appear only when the engine provides them.
+- **Phone.** Opens `bt_phone`. The tile appears only while `bt_phone` is
+  `running` and disappears when it stops.
+- **Inventory.** Opens `bt_inventory` through its `toggle` client export.
+- **Admin.** Opens `bt_admin`. The tile is shown only when `bt_core.getRoles`
+  returns `owner`, `admin` or `moderator` for the character. It grants no
+  authority: `bt_admin` checks its own ACL again before opening.
+
+While the wheel is open, the `Attack` and `WeaponWheel` actions are blocked so
+that the confirming click does not fire the equipped weapon and the native wheel
+does not appear underneath. The WebUI takes the cursor but not the keyboard, so
+the release of the hold key still reaches the game.
+
+## Requirements
+
+- `bt_core >=0.8.1`;
+- `bt_lib >=0.1.0`;
+- `bt_inventory >=0.1.0`;
+- `bt_admin >=1.0.0`;
+- an Open77 server with the weapon relay, which `bt_inventory` loads through its
+  `open77_weapons >=0.1.0` dependency.
+
+`bt_phone` is optional. `bt_radial` never requires it to start.
+
+## Install
+
+Place the release at `resources/bt_radial/`, then add it to `resources.load`
+after its dependencies. Merge the entry; do not replace the rest of your file.
+
+```jsonc
+{
+  "resources": {
+    "load": [
+      "open77_weapons",
+      "bt_inventory",
+      "bt_core",
+      "bt_lib",
+      "bt_admin",
+      "bt_radial"
+    ]
+  }
+}
+```
+
+Restart the dedicated server after changing `server.jsonc`. `bt_radial` uses
+`reload_policy "local"`.
+
+## Verify the installation
+
+At startup the server prints:
+
+```text
+[bt_radial] admin tile role gate ready (owner/admin/moderator).
+```
+
+When a character becomes ready, the server logs the staff decision once per
+change:
+
+```text
+[bt_radial] player=12 adminTile=true roles=[owner]
+```
+
+## Permissions
+
+`bt_radial` declares exactly these manifest permissions:
+
+- `input.actions`;
+- `local.events`;
+- `network.events`;
+- `player.weapons.read`;
+- `player.weapons.edit`.
+
+## Language
+
+Texts shown to players come from `lang/en.lua` and `lang/fr.lua`. See
+[Configure bt_radial](/en/resources/bt_radial/configuration).
+
+## Troubleshooting the ADMIN tile
+
+If the tile does not appear:
+
+1. Check that `bt_core_characters.roles` holds a JSON array such as
+   `["owner"]`, not `{ "owner" }`.
+2. Reconnect the character after any direct SQL change. Roles changed in SQL are
+   read again only when the character connects.
+3. Restart `bt_radial` or the server after changing its scripts. A server with
+   `watchIntervalMilliseconds: 0` never reloads resources automatically.
+4. Read the `[bt_radial] player=... adminTile=... roles=[...]` log line.
+   `adminTile=true` means `bt_core` returned a staff role. If the tile is visible
+   but `bt_admin` refuses to open, check `command.btadmin` in the Open77 ACL.
+
+## Reference
+
+<CardGroup cols={2}>
+  <Card title="Configure bt_radial" icon="sliders" href="/en/resources/bt_radial/configuration">
+    Hold key, dead zone and language.
+  </Card>
+  <Card title="Events and integrations" icon="plug" href="/en/resources/bt_radial/events">
+    Network events, consumed events and the exports it calls.
+  </Card>
+</CardGroup>

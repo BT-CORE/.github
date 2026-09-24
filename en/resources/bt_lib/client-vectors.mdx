@@ -1,0 +1,402 @@
+---
+title: "Client module: vectors"
+description: "Distances, headings and forward offsets."
+icon: "arrows-up-down-left-right"
+---
+
+Import the module in a client script:
+
+```lua
+local BT = assert(require("@bt_lib"))
+local vectors = BT.vectors
+```
+
+The module runs in the importing resource's VM, so these helpers need no permission.
+
+Headings are in degrees, where `0` is north (`+y`) and angles grow clockwise.
+This is the same convention as `Open77.character`.
+
+## `vectors.distance2D`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the horizontal distance between two points, ignoring Z.
+
+### Inputs
+
+<ParamField body="a" type="Vec2" required>
+  First point.
+
+  <Expandable title="Show Vec2 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="b" type="Vec2" required>
+  Second point.
+
+  <Expandable title="Show Vec2 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.distance2D(a, b)
+
+local meters = vectors.distance2D(a, b)
+```
+
+### Returns
+
+<ResponseField name="distance" type="number" required>
+  Distance in meters.
+</ResponseField>
+
+## `vectors.distance3D`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the three-dimensional distance between two points.
+
+### Inputs
+
+<ParamField body="a" type="Vec3" required>
+  First point.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="b" type="Vec3" required>
+  Second point.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.distance3D(a, b)
+
+local meters = vectors.distance3D(a, b)
+```
+
+### Returns
+
+<ResponseField name="distance" type="number" required>
+  Distance in meters.
+</ResponseField>
+
+## `vectors.distanceSq`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the squared distance between two points, for cheap comparison against a squared threshold. `z` is optional on each point: a missing `z` reuses the other point's `z`, so two points without `z` give a 2D distance.
+
+### Inputs
+
+<ParamField body="a" type="Vec3 | nil" required>
+  First point. Accepts `nil`.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="b" type="Vec3 | nil" required>
+  Second point. Accepts `nil`.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.distanceSq(a, b)
+
+local near = vectors.distanceSq(playerPosition, target) <= 25.0
+```
+
+### Returns
+
+<ResponseField name="distanceSquared" type="number" required>
+  Squared distance in square meters. `math.huge` when either point is `nil`.
+</ResponseField>
+
+## `vectors.within3D`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Tells whether two points are within a distance, without computing a square root.
+
+### Inputs
+
+<ParamField body="a" type="Vec3 | nil" required>
+  First point. Accepts `nil`.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="b" type="Vec3 | nil" required>
+  Second point. Accepts `nil`.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="maxDistance" type="number" required>
+  Maximum distance in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.within3D(a, b, maxDistance)
+
+local close = vectors.within3D(playerPosition, shopPosition, 3.0)
+```
+
+### Returns
+
+<ResponseField name="within" type="boolean" required>
+  `true` when the points are at most `maxDistance` apart. `false` when either point is `nil`.
+</ResponseField>
+
+## `vectors.atan2`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Two-argument arctangent. It exists because `math.atan(y, x)` is not portable in this runtime.
+
+### Inputs
+
+<ParamField body="y" type="number" required>
+  Y component.
+</ParamField>
+
+<ParamField body="x" type="number" required>
+  X component.
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.atan2(y, x)
+
+local radians = vectors.atan2(1, 1)
+```
+
+### Returns
+
+<ResponseField name="angle" type="number" required>
+  Angle in radians. `0` when both components are `0`.
+</ResponseField>
+
+## `vectors.bearingVector`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the unit vector for a heading.
+
+### Inputs
+
+<ParamField body="headingDeg" type="number" default="0">
+  Optional. Heading in degrees. When omitted, `0` is used.
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.bearingVector(headingDeg)
+
+local direction = vectors.bearingVector(90)
+```
+
+### Returns
+
+<ResponseField name="vector" type="Vec2" required>
+  Unit vector in the horizontal plane.
+
+  <Expandable title="Show Vec2 fields">
+    <ResponseField name="x" type="number" required>
+      World X coordinate.
+    </ResponseField>
+    <ResponseField name="y" type="number" required>
+      World Y coordinate.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## `vectors.yawToward`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the heading needed to go from one point to another, using the horizontal component only.
+
+### Inputs
+
+<ParamField body="from" type="Vec2" required>
+  Start point.
+
+  <Expandable title="Show Vec2 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="to" type="Vec2" required>
+  Target point.
+
+  <Expandable title="Show Vec2 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.yawToward(from, to)
+
+local heading = vectors.yawToward(vehiclePosition, playerPosition)
+```
+
+### Returns
+
+<ResponseField name="headingDeg" type="number" required>
+  Heading in degrees. `0` when both points coincide.
+</ResponseField>
+
+## `vectors.ahead`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the point at a distance from a position along a heading. Z is unchanged.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" required>
+  Origin.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="headingDeg" type="number" required>
+  Heading in degrees.
+</ParamField>
+
+<ParamField body="distance" type="number" required>
+  Distance in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- vectors.ahead(position, headingDeg, distance)
+
+local spawn = vectors.ahead(position, heading, 5.0)
+```
+
+### Returns
+
+<ResponseField name="point" type="Vec3" required>
+  Resulting point.
+
+  <Expandable title="Show Vec3 fields">
+    <ResponseField name="x" type="number" required>
+      World X coordinate.
+    </ResponseField>
+    <ResponseField name="y" type="number" required>
+      World Y coordinate.
+    </ResponseField>
+    <ResponseField name="z" type="number" required>
+      World Z coordinate.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

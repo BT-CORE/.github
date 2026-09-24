@@ -1,0 +1,826 @@
+---
+title: "Client module: raycast"
+description: "Rays, ground clearance, ground classification and camera picking."
+icon: "crosshairs"
+---
+
+Import the module in a client script:
+
+```lua
+local BT = assert(require("@bt_lib"))
+local raycast = BT.raycast
+```
+
+The module runs in the importing resource's VM, so the calling resource must declare the `world.query` permission. `lookAt` with cursor coordinates also needs `input.actions`. `bt_lib` itself holds no permission.
+
+## `raycast.cast`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Casts a raw world ray between two points. It is the single entry point so that resources do not call `Open77.world.raycast` directly.
+
+**Precondition:** The calling resource declares the `world.query` permission. A live game instance is required.
+
+### Inputs
+
+<ParamField body="from" type="Vec3" required>
+  Ray start.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="to" type="Vec3" required>
+  Ray end.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="options" type="RaycastOptions" default="nil">
+  Optional. Collision groups to include. When omitted, both groups are used.
+
+  <Expandable title="Show RaycastOptions fields">
+    <ParamField body="static" type="boolean" default="true">
+      Optional. Include static world geometry.
+    </ParamField>
+    <ParamField body="dynamic" type="boolean" default="true">
+      Optional. Include dynamic objects, vehicles and NPCs.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.cast(from, to, options)
+
+local origin = Open77.character.state().position
+local ray, reason = raycast.cast(origin, { x = origin.x + 20, y = origin.y, z = origin.z })
+```
+
+### Returns
+
+<ResponseField name="hit" type="RaycastHit | nil" post={["optional"]}>
+  Trace result, or `nil` when the raycast failed.
+
+  <Expandable title="Show RaycastHit fields">
+    <ResponseField name="hit" type="boolean" required>
+      `true` when the ray hit a surface.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3 | nil" post={["optional"]}>
+      Impact position. Present only when `hit` is `true`.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="normal" type="Vec3 | nil" post={["optional"]}>
+      Surface normal at the impact. Present only when `hit` is `true`.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="material" type="string | nil" post={["optional"]}>
+      Engine material name. Present only when `hit` is `true`.
+    </ResponseField>
+    <ResponseField name="distance" type="number | nil" post={["optional"]}>
+      Distance from the ray start in meters. Present only when `hit` is `true`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="reason" type="string | nil" post={["optional"]}>
+  Failure reason returned by `Open77.world.raycast`, for example `permission_denied:world.query`, `invalid_from`, `invalid_to` or `world_unavailable_on_this_host`.
+</ResponseField>
+
+## `raycast.rayIsClear`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Tells whether a ray completes without hitting anything. The call is wrapped in a `pcall`, so a resource without `world.query` or without a live game instance gets `false` instead of a Lua error.
+
+### Inputs
+
+<ParamField body="from" type="Vec3" required>
+  Ray start.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="to" type="Vec3" required>
+  Ray end.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="options" type="RaycastOptions" default="nil">
+  Optional. Collision groups to include. When omitted, both groups are used.
+
+  <Expandable title="Show RaycastOptions fields">
+    <ParamField body="static" type="boolean" default="true">
+      Optional. Include static world geometry.
+    </ParamField>
+    <ParamField body="dynamic" type="boolean" default="true">
+      Optional. Include dynamic objects, vehicles and NPCs.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.rayIsClear(from, to, options)
+
+local clear = raycast.rayIsClear(from, to)
+```
+
+### Returns
+
+<ResponseField name="clear" type="boolean" required>
+  `true` only when the ray completed and hit nothing. `false` when it hit something or could not run.
+</ResponseField>
+
+## `raycast.groundZAt`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the height of the static ground below a point, using a downward ray. Vehicles and bodies are not the ground.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="x" type="number" required>
+  World X coordinate.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  World Y coordinate.
+</ParamField>
+
+<ParamField body="fromZ" type="number" default="400">
+  Optional. Height to start probing from. When omitted, the platform default of `400` is used.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.groundZAt(x, y, fromZ)
+
+local z = raycast.groundZAt(-1460.2, 99.9)
+```
+
+### Returns
+
+<ResponseField name="z" type="number | nil" post={["optional"]}>
+  Ground height. `nil` when `Open77.world.groundZ` is unavailable, the call fails, nothing is below the point, or the result is not a number.
+</ResponseField>
+
+## `raycast.hasClearance`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Checks the space around a ground point with short horizontal rays in four cardinal directions, at torso height by default. It is an anti-wall heuristic, not proof that the spot is walkable.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="x" type="number" required>
+  World X coordinate.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  World Y coordinate.
+</ParamField>
+
+<ParamField body="z" type="number" required>
+  Ground height.
+</ParamField>
+
+<ParamField body="length" type="number" default="1.5">
+  Optional. Ray length in meters.
+</ParamField>
+
+<ParamField body="options" type="ClearanceOptions" default="nil">
+  Optional. Ray height, directions and raycast options. When omitted, the defaults listed in the type apply.
+
+  <Expandable title="Show ClearanceOptions fields">
+    <ParamField body="heightM" type="number" default="1.0">
+      Optional. Ray height above the ground in meters.
+    </ParamField>
+    <ParamField body="dirs" type="Vec2[]" default="{ +x, -x, +y, -y }">
+      Optional. Ray directions. Defaults to the four cardinal directions.
+
+      <Expandable title="Show Vec2 fields">
+        <ParamField body="x" type="number" required>
+          World X coordinate.
+        </ParamField>
+        <ParamField body="y" type="number" required>
+          World Y coordinate.
+        </ParamField>
+      </Expandable>
+    </ParamField>
+    <ParamField body="rayOptions" type="RaycastOptions" default="nil">
+      Optional. Options forwarded to every raycast.
+
+      <Expandable title="Show RaycastOptions fields">
+        <ParamField body="static" type="boolean" default="true">
+          Optional. Include static world geometry.
+        </ParamField>
+        <ParamField body="dynamic" type="boolean" default="true">
+          Optional. Include dynamic objects, vehicles and NPCs.
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.hasClearance(x, y, z, length, options)
+
+local clear = raycast.hasClearance(x, y, z, 2.0, { heightM = 1.2 })
+```
+
+### Returns
+
+<ResponseField name="clear" type="boolean" required>
+  `true` when no ray hits an obstacle. `false` when a ray hits, a ray cannot run, or `Open77.world.raycast` is unavailable.
+</ResponseField>
+
+## `raycast.hasFootprintClearance`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Budgeted variant of `hasClearance`. It probes the four sides of a footprint at one or several heights, and stops as soon as a ray hits something or the ray budget is spent. The cost is bounded by construction.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="x" type="number" required>
+  World X coordinate.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  World Y coordinate.
+</ParamField>
+
+<ParamField body="z" type="number" required>
+  Ground height.
+</ParamField>
+
+<ParamField body="footprint" type="ClearanceFootprint" default="nil">
+  Optional. Footprint half sizes. When omitted, `1.5` by `1.5` is used.
+
+  <Expandable title="Show ClearanceFootprint fields">
+    <ParamField body="halfLengthM" type="number" default="1.5">
+      Optional. Half length of the footprint in meters.
+    </ParamField>
+    <ParamField body="halfWidthM" type="number" default="1.5">
+      Optional. Half width of the footprint in meters.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="rayHeightsM" type="number[]" default="{ 1.0 }">
+  Optional. Ray heights above the ground, in meters.
+</ParamField>
+
+<ParamField body="maxRays" type="integer" default="4">
+  Optional. Maximum number of rays in total.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.hasFootprintClearance(x, y, z, footprint, rayHeightsM, maxRays)
+
+local clear = raycast.hasFootprintClearance(x, y, z, { halfLengthM = 2.5, halfWidthM = 1.2 }, { 0.5, 1.2 }, 8)
+```
+
+### Returns
+
+<ResponseField name="clear" type="boolean" required>
+  `false` when a ray hits an obstacle. `true` when nothing was hit, when the ray budget is spent, or when `Open77.world.raycast` is unavailable.
+</ResponseField>
+
+## `raycast.footprintGroundClear`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Most complete clearance check. It samples a 3x3 grid oriented by the heading, measures the ground under each of the nine points, rejects a point that differs from the center height by more than `maxGroundDeltaM`, then tests horizontal clearance along both grid axes. It rules out walls and voids without banning sloped roads.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="x" type="number" required>
+  World X coordinate.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  World Y coordinate.
+</ParamField>
+
+<ParamField body="z" type="number" required>
+  Ground height at the center.
+</ParamField>
+
+<ParamField body="yaw" type="number" default="0">
+  Optional. Heading in degrees. When omitted, `0` is used.
+</ParamField>
+
+<ParamField body="footprint" type="GroundFootprint" default="nil">
+  Optional. Footprint sizes and limits. When omitted, the defaults listed in the type apply.
+
+  <Expandable title="Show GroundFootprint fields">
+    <ParamField body="halfLengthM" type="number" default="3.0">
+      Optional. Half length of the footprint in meters.
+    </ParamField>
+    <ParamField body="halfWidthM" type="number" default="1.35">
+      Optional. Half width of the footprint in meters.
+    </ParamField>
+    <ParamField body="maxGroundDeltaM" type="number" default="1.5">
+      Optional. Maximum ground height difference from the center, in meters.
+    </ParamField>
+    <ParamField body="rayHeightsM" type="number[]" default="{ 0.4, 1.25 }">
+      Optional. Horizontal ray heights above the ground, in meters.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.footprintGroundClear(x, y, z, yaw, footprint)
+
+local ok = raycast.footprintGroundClear(x, y, z, heading, { halfLengthM = 2.4, halfWidthM = 1.1 })
+```
+
+### Returns
+
+<ResponseField name="clear" type="boolean" required>
+  `true` when the whole footprint is on usable ground with clear space. `false` otherwise, including when a ground sample is missing or `Open77.world.raycast` is unavailable.
+</ResponseField>
+
+## `raycast.classifyMaterial`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the ground category of a raw material name. The built-in table covers `stone`, `sand`, `carpet`, `ceramic`, `tiles`, `metal`, `concrete`, `metal_car` and `asphalt` physical materials.
+
+### Inputs
+
+<ParamField body="material" type="string" default="nil">
+  Optional. Raw material name, for example `asphalt.physmat`. A value that is not a string returns `nil`.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.classifyMaterial(material)
+
+local category = raycast.classifyMaterial("asphalt.physmat")
+```
+
+### Returns
+
+<ResponseField name="category" type="'rock' | 'sand' | 'inside' | 'sidewalk' | 'road' | nil" post={["optional"]}>
+  Ground category. `nil` when the material is unknown or not a string.
+</ResponseField>
+
+## `raycast.groundCategoryAt`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Casts a vertical ray downward and returns the category of the ground it hits.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" default="local character position">
+  Optional. Ray origin. When omitted, the local character position is used.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="distance" type="number" default="2.0">
+  Optional. Ray length in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.groundCategoryAt(position, distance)
+
+local category, material = raycast.groundCategoryAt()
+```
+
+### Returns
+
+<ResponseField name="category" type="'rock' | 'sand' | 'inside' | 'sidewalk' | 'road' | nil" post={["optional"]}>
+  Ground category. `nil` when nothing is hit, the material is unknown, or the position is unavailable.
+</ResponseField>
+
+<ResponseField name="materialOrReason" type="string | nil" post={["optional"]}>
+  Raw `hit.material` when the ray hit a surface. Otherwise the failure reason: `position_unavailable`, `no_hit`, or the reason returned by `Open77.world.raycast`.
+</ResponseField>
+
+## `raycast.isPointOnRoad`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Tells whether the ground under a point is a road, using `groundCategoryAt`.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" default="local character position">
+  Optional. Ray origin. When omitted, the local character position is used.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="distance" type="number" default="2.0">
+  Optional. Ray length in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.isPointOnRoad(position, distance)
+
+local onRoad = raycast.isPointOnRoad(position)
+```
+
+### Returns
+
+<ResponseField name="onRoad" type="boolean" required>
+  `true` when the category is `road`. `false` otherwise, including when the ground could not be read.
+</ResponseField>
+
+## `raycast.isPointOnSidewalk`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Tells whether the ground under a point is a sidewalk, using `groundCategoryAt`.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" default="local character position">
+  Optional. Ray origin. When omitted, the local character position is used.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="distance" type="number" default="2.0">
+  Optional. Ray length in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.isPointOnSidewalk(position, distance)
+
+local onSidewalk = raycast.isPointOnSidewalk(position)
+```
+
+### Returns
+
+<ResponseField name="onSidewalk" type="boolean" required>
+  `true` when the category is `sidewalk`. `false` otherwise, including when the ground could not be read.
+</ResponseField>
+
+## `raycast.isPointInside`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Tells whether the ground under a point belongs to an interior, using `groundCategoryAt`.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" default="local character position">
+  Optional. Ray origin. When omitted, the local character position is used.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="distance" type="number" default="2.0">
+  Optional. Ray length in meters.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.isPointInside(position, distance)
+
+local inside = raycast.isPointInside(position)
+```
+
+### Returns
+
+<ResponseField name="inside" type="boolean" required>
+  `true` when the category is `inside`. `false` otherwise, including when the ground could not be read.
+</ResponseField>
+
+## `raycast.lookAt`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Casts a camera ray through normalized viewport coordinates and identifies the aimed entity. The result is UI observation, not authorization: the server must validate any action independently.
+
+**Precondition:** The calling resource declares the `world.query` permission. Aiming with the cursor coordinates from `Open77.input.cursor` also requires `input.actions`.
+
+### Inputs
+
+<ParamField body="maxDistance" type="number" default="12">
+  Optional. Maximum distance in meters.
+</ParamField>
+
+<ParamField body="options" type="ScreenRaycastOptions" default="nil">
+  Optional. Collision groups to include. At least one group must stay enabled.
+
+  <Expandable title="Show ScreenRaycastOptions fields">
+    <ParamField body="static" type="boolean" default="true">
+      Optional. Include static world geometry.
+    </ParamField>
+    <ParamField body="dynamic" type="boolean" default="true">
+      Optional. Include dynamic objects, vehicles and NPCs.
+    </ParamField>
+    <ParamField body="self" type="boolean" default="false">
+      Optional. Include the visible local body (F7 body picking).
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="viewX" type="number" default="0.5">
+  Optional. Normalized horizontal viewport coordinate from `0` to `1`.
+</ParamField>
+
+<ParamField body="viewY" type="number" default="0.5">
+  Optional. Normalized vertical viewport coordinate from `0` to `1`.
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.lookAt(maxDistance, options, viewX, viewY)
+
+local hit, reason = raycast.lookAt(8)
+if hit and hit.target then print(hit.target.kind) end
+```
+
+### Returns
+
+<ResponseField name="hit" type="ScreenRaycastHit | nil" post={["optional"]}>
+  Screen ray result, or `nil` on failure.
+
+  <Expandable title="Show ScreenRaycastHit fields">
+    <ResponseField name="hit" type="boolean" required>
+      `true` when the ray hit a surface. On a miss, `position` is at the maximum distance.
+    </ResponseField>
+    <ResponseField name="position" type="Vec3" required>
+      Impact position, or the point at maximum distance on a miss.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="normal" type="Vec3 | nil" post={["optional"]}>
+      Surface normal. Present on a physical hit.
+
+      <Expandable title="Show Vec3 fields">
+        <ResponseField name="x" type="number" required>
+          World X coordinate.
+        </ResponseField>
+        <ResponseField name="y" type="number" required>
+          World Y coordinate.
+        </ResponseField>
+        <ResponseField name="z" type="number" required>
+          World Z coordinate.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="distance" type="number | nil" post={["optional"]}>
+      Camera-to-impact distance in meters. Present on a hit.
+    </ResponseField>
+    <ResponseField name="material" type="string | nil" post={["optional"]}>
+      Engine material name. May be empty. Present on a physical hit.
+    </ResponseField>
+    <ResponseField name="entityLookupAvailable" type="boolean | nil" post={["optional"]}>
+      Whether entity resolution was available.
+    </ResponseField>
+    <ResponseField name="target" type="ScreenTarget | nil" post={["optional"]}>
+      Aimed entity, or `nil` for unowned geometry.
+
+      <Expandable title="Show ScreenTarget fields">
+        <ResponseField name="engineEntity" type="string" required>
+          Decimal engine entity identifier of the local incarnation. Keep it as a string.
+        </ResponseField>
+        <ResponseField name="className" type="string" required>
+          Engine class name.
+        </ResponseField>
+        <ResponseField name="kind" type="string" required>
+          Target kind: `player`, `vehicle`, `npc`, `prop`, `door`, `device`, `item` or `object`.
+        </ResponseField>
+        <ResponseField name="networked" type="boolean" required>
+          Whether the target is a networked entity.
+        </ResponseField>
+        <ResponseField name="playerId" type="integer | nil" post={["optional"]}>
+          Network player identifier. Present for players.
+        </ResponseField>
+        <ResponseField name="vehicleId" type="integer | nil" post={["optional"]}>
+          Network vehicle identifier. Present for vehicles.
+        </ResponseField>
+        <ResponseField name="npcId" type="integer | nil" post={["optional"]}>
+          Network NPC identifier. Present for NPCs.
+        </ResponseField>
+        <ResponseField name="propId" type="string | nil" post={["optional"]}>
+          Decimal prop identifier matching the props API. Present for props.
+        </ResponseField>
+        <ResponseField name="record" type="string | nil" post={["optional"]}>
+          Game record of the target when available.
+        </ResponseField>
+        <ResponseField name="entity" type="string | nil" post={["optional"]}>
+          Local Open77 registry handle.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="hitSource" type="string | nil" post={["optional"]}>
+      `self_presentation` for an opt-in local body hit; absent otherwise.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="reason" type="string | nil" post={["optional"]}>
+  Failure reason returned by `Open77.camera.screenRaycast`, for example `permission_denied:world.query`, `invalid_screen_coordinates_or_distance`, `camera_unavailable` or `game_not_focused`.
+</ResponseField>
+
+## `raycast.bestHeading`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Finds the most open direction around a point. It traces a line on each side of the point for evenly spaced headings and returns the heading whose line goes the farthest without hitting anything. It does not detect the traffic direction, only which side is more open.
+
+**Precondition:** The calling resource declares the `world.query` permission.
+
+### Inputs
+
+<ParamField body="position" type="Vec3" required>
+  Point to probe around.
+
+  <Expandable title="Show Vec3 fields">
+    <ParamField body="x" type="number" required>
+      World X coordinate.
+    </ParamField>
+    <ParamField body="y" type="number" required>
+      World Y coordinate.
+    </ParamField>
+    <ParamField body="z" type="number" required>
+      World Z coordinate.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="options" type="BestHeadingOptions" default="nil">
+  Optional. Probe settings. When omitted, the defaults listed in the type apply.
+
+  <Expandable title="Show BestHeadingOptions fields">
+    <ParamField body="count" type="integer" default="8">
+      Optional. Number of evenly spaced headings to test.
+    </ParamField>
+    <ParamField body="checkDistance" type="number" default="4.0">
+      Optional. Half length of each probe line in meters.
+    </ParamField>
+    <ParamField body="heightM" type="number" default="1.0">
+      Optional. Probe height above the point in meters.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- raycast.bestHeading(position, options)
+
+local heading = raycast.bestHeading(position, { count = 12 })
+```
+
+### Returns
+
+<ResponseField name="headingDeg" type="number" required>
+  Best heading in degrees. `0` when `Open77.world.raycast` is unavailable.
+</ResponseField>

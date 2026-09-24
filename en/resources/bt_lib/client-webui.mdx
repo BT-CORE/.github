@@ -1,0 +1,256 @@
+---
+title: "Client module: webui"
+description: "Full-screen WebUI surface lifecycle, readiness, events and focus."
+icon: "window-maximize"
+---
+
+Import the module in a client script:
+
+```lua
+local BT = assert(require("@bt_lib"))
+local webui = BT.webui
+```
+
+The module runs in the importing resource's VM, so it uses the WebUI permissions of the calling resource.
+
+Every importing resource gets its own instance of this module, so the surface and
+readiness state are never shared between two resources. Business handlers stay in
+your resource: register them on the page returned by `create`.
+
+## `webui.create`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Creates the calling resource's WebUI surface. Only the first call creates it; later calls return the existing handle. The surface starts without keyboard or cursor focus.
+
+### Inputs
+
+<ParamField body="options" type="WebUICreateOptions" default="nil">
+  Optional. Creation options. When omitted, the defaults listed in the type apply.
+
+  <Expandable title="Show WebUICreateOptions fields">
+    <ParamField body="entry" type="string" default="web/index.html">
+      Optional. Page entry point.
+    </ParamField>
+    <ParamField body="layer" type="string" default="menu">
+      Optional. WebUI layer.
+    </ParamField>
+    <ParamField body="width" type="integer" default="1920">
+      Optional. Logical surface width.
+    </ParamField>
+    <ParamField body="height" type="integer" default="1080">
+      Optional. Logical surface height.
+    </ParamField>
+    <ParamField body="transparent" type="boolean" default="true">
+      Optional. Transparent background. Any value except `false` keeps it transparent.
+    </ParamField>
+    <ParamField body="visible" type="boolean" default="false">
+      Optional. Initial visibility. Only `true` shows the surface.
+    </ParamField>
+    <ParamField body="readyEvent" type="string" default="nil">
+      Optional. JS-to-Lua event that signals that the page is ready.
+    </ParamField>
+    <ParamField body="onReady" type="function" default="nil">
+      Optional. Called with the event arguments when `readyEvent` arrives.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```lua
+--- webui.create(options)
+
+local page = webui.create({ readyEvent = "myresource:ready", onReady = function() print("ui ready") end })
+if page then page:on("myresource:close", function() webui.setFocus(false, false) end) end
+```
+
+### Returns
+
+<ResponseField name="page" type="WebUIPage | nil" post={["optional"]}>
+  Handle of the surface. `nil` when `WebUI.create` failed; the failure is logged as `[<resource>] WebUI.create failed`.
+</ResponseField>
+
+## `webui.get`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Returns the current WebUI handle.
+
+### Inputs
+
+None.
+
+### Example
+
+```lua
+--- webui.get()
+
+local page = webui.get()
+```
+
+### Returns
+
+<ResponseField name="page" type="WebUIPage | nil" post={["optional"]}>
+  Current handle. `nil` before `create` succeeds or after `destroy`.
+</ResponseField>
+
+## `webui.isReady`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Tells whether the page has signaled that it is ready.
+
+### Inputs
+
+None.
+
+### Example
+
+```lua
+--- webui.isReady()
+
+local ready = webui.isReady()
+```
+
+### Returns
+
+<ResponseField name="ready" type="boolean" required>
+  `true` after `readyEvent` arrived or `setReady(true)` was called.
+</ResponseField>
+
+## `webui.setReady`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Sets the ready state manually, for a page created without `readyEvent` or for a screen without a dedicated JS event.
+
+### Inputs
+
+<ParamField body="value" type="boolean" required>
+  Ready state. Any value other than `true` counts as `false`.
+</ParamField>
+
+### Example
+
+```lua
+--- webui.setReady(value)
+
+webui.setReady(true)
+```
+
+### Returns
+
+None.
+
+## `webui.send`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Sends an event to the WebUI. It returns `false` without raising an error when the surface does not exist, or when it is not ready and `requireReady` is not explicitly `false`.
+
+### Inputs
+
+<ParamField body="event" type="string" required>
+  Event name.
+</ParamField>
+
+<ParamField body="payload" type={"object<string, any>"} default="{}">
+  Optional. Event payload. When omitted, an empty table is sent.
+</ParamField>
+
+<ParamField body="requireReady" type="boolean" default="true">
+  Optional. Pass `false` to send before the page is ready.
+</ParamField>
+
+### Example
+
+```lua
+--- webui.send(event, payload, requireReady)
+
+local sent = webui.send("myresource:open", { title = "Hello" })
+```
+
+### Returns
+
+<ResponseField name="sent" type="boolean" required>
+  `true` when the event was delivered. `false` when there is no surface, the page is not ready, or the call failed.
+</ResponseField>
+
+## `webui.setFocus`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Sets keyboard and cursor focus. Use it for a screen with text input. Both arguments are explicit because most bt_* screens want the cursor only; see `setCursorFocus`.
+
+### Inputs
+
+<ParamField body="keyboard" type="boolean" required>
+  Whether the page captures the keyboard.
+</ParamField>
+
+<ParamField body="cursor" type="boolean" required>
+  Whether the page captures the cursor.
+</ParamField>
+
+### Example
+
+```lua
+--- webui.setFocus(keyboard, cursor)
+
+local focused = webui.setFocus(true, true)
+```
+
+### Returns
+
+<ResponseField name="focused" type="boolean" required>
+  `true` when the focus was applied. `false` when no surface exists or the call failed.
+</ResponseField>
+
+## `webui.setCursorFocus`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Gives or releases cursor focus only. The keyboard is never captured. Shorthand for `setFocus(false, want)`.
+
+### Inputs
+
+<ParamField body="want" type="boolean" required>
+  Whether the page captures the cursor.
+</ParamField>
+
+### Example
+
+```lua
+--- webui.setCursorFocus(want)
+
+webui.setCursorFocus(true)
+```
+
+### Returns
+
+None.
+
+## `webui.destroy`
+
+<Badge color="blue" size="sm" shape="pill" stroke>CLIENT</Badge>
+
+Destroys the surface and resets the internal state. Call it from `onClientResourceStop`. A later `create` in the same VM builds a new surface.
+
+### Inputs
+
+None.
+
+### Example
+
+```lua
+--- webui.destroy()
+
+AddEventHandler("onClientResourceStop", function(resource)
+  if resource == GetCurrentResourceName() then webui.destroy() end
+end)
+```
+
+### Returns
+
+None.
