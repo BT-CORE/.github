@@ -15,7 +15,6 @@ the evolving resource catalog are maintained in the official documentation.
 - [Maintained by Botilus](#maintained-by-botilus)
 - [From CFX to Open2077](#from-cfx-to-open2077)
 - [What we are building](#what-we-are-building)
-- [Resources](#resources)
 - [Principles](#principles)
 - [Project status](#project-status)
 
@@ -86,43 +85,6 @@ The project is built around:
 The long-term objective is simple: bring together accumulated experience,
 knowledge, and technical standards in a core that feels designed as one system
 from the beginning.
-
-## Resources
-
-This overview follows the public roadmap. `Preview` and `pre-release` resources
-are still evolving and may not yet be available as stable downloads. The
-[official documentation](https://botilus.mintlify.io/en) remains the source of
-truth for versions, installation, configuration, and APIs.
-
-### Foundation
-
-| Resource | Status | Main capabilities |
-| :--- | :--- | :--- |
-| `bt_core` | Preview `0.8.5` | Character identity, persistence, economy, jobs, vehicles, access control, and shared contracts. |
-| `bt_inventory` | Preview `0.1.0` | Authoritative inventories, items, weapons, slots, registered containers, and drag-and-drop UI. |
-| `bt_lib` | Preview `0.1.0` | Shared client and server helpers for entities, vectors, WebUI, and readiness. |
-
-### Gameplay
-
-| Resource | Status | Main capabilities |
-| :--- | :--- | :--- |
-| `bt_bank` | Pre-release | Bank accounts, deposits, withdrawals, transfers, and ATMs. |
-| `bt_cardealer` | Pre-release | Dealership catalogs, purchases, demonstration vehicles, and test drives. |
-| `bt_faction` | Pre-release | Factions, members, ranks, permissions, and shared treasuries. |
-| `bt_housing` | Pre-release | Purchasable properties, residents, access rules, and instanced interiors. |
-| `bt_phone` | Pre-release | Calls, contacts, messages, news, and player portraits. |
-| `bt_shop` | Pre-release | Configurable item stores with server-authoritative purchases and sales. |
-| `bt_taxi` | Pre-release | Delamain taxi requests, destinations, pricing, and driving. |
-| `bt_traffic` | Pre-release | Ambient vehicle and pedestrian traffic distributed by cells and instances. |
-
-### Platform and interface
-
-| Resource | Status | Main capabilities |
-| :--- | :--- | :--- |
-| `bt_admin` | Preview `1.1.0` | ACL-protected administration, moderation, player support, world tools, and development utilities. |
-| `bt_interaction` | Pre-release | World interaction prompts and consistent WebUI choices. |
-| `bt_nuiprotect` | Pre-release | Heuristic WebUI developer-tools detection with configurable enforcement. |
-| `bt_radial` | Preview `0.2.1` | Responsive equipped-weapon and service radial with role-aware access to administration tools. |
 
 ## Principles
 
