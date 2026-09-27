@@ -1,112 +1,61 @@
 # BT CORE
 
-> **Built from experience. Designed as one ecosystem. Made for Open2077.**
+## Processus de développement
 
-## Documentation
-
-### [Open the official BT CORE documentation →](https://botilus.mintlify.io/en)
-
-Installation, configuration, client and server APIs, complete contracts, and
-the evolving resource catalog are maintained in the official documentation.
-
-## Contents
-
-- [What is BT CORE?](#what-is-bt-core)
-- [Maintained by Botilus](#maintained-by-botilus)
-- [From CFX to Open2077](#from-cfx-to-open2077)
-- [What we are building](#what-we-are-building)
-- [Principles](#principles)
-- [Project status](#project-status)
-
-## What is BT CORE?
-
-**BT CORE is a core framework and collection of roleplay resources created by
-Botilus for [Open2077](https://open2077.net/).**
-
-The project brings systems, ideas, and workflows originally designed through
-years of CFX development into a single modular foundation for Open2077. It is
-not a loose catalog of unrelated scripts and not a blind one-to-one port. Each
-resource is being reconsidered for a new platform, a consistent API, and a
-better experience for both server owners and developers.
+La branche `main` est la branche de production. Elle doit rester stable et
+déployable à tout moment.
 
 > [!IMPORTANT]
-> BT CORE is under active development. APIs and resources may evolve while the
-> foundation is tested against real use cases and the Open2077 platform grows.
+> Aucun commit, push ou force-push direct n'est autorisé sur `main`. Toute
+> modification doit passer par une branche dédiée et une Pull Request (PR),
+> aussi appelée Merge Request (MR).
 
-## Maintained by Botilus
+### Workflow
 
-BT CORE is created and maintained by **Botilus**, who has worked in the CFX
-ecosystem since 2015 and contributed to many roleplay servers across different
-teams, architectures, and production constraints.
+1. Mettre à jour sa branche locale `main` depuis le dépôt distant.
+2. Créer une branche dédiée à partir de `main`.
+3. Développer et tester la modification sur cette branche.
+4. Pousser la branche et ouvrir une PR vers `main`.
+5. Faire relire et valider la PR.
+6. Fusionner uniquement lorsque tous les contrôles sont validés.
+7. Supprimer la branche de travail après la fusion.
 
-That background includes roughly forty Git repositories and around 300 scripts
-written by hand, including more than 40 RedM resources created between 2019 and
-2020. This work predates the use of generative AI in the development workflow.
+### Nommage des branches
 
-These figures are included only to explain where BT CORE comes from. They are
-not a substitute for quality: the project must earn trust through clear code,
-reliable behavior, useful documentation, and long-term maintenance.
+- `feature/<description>` pour une nouvelle fonctionnalité ;
+- `fix/<description>` pour une correction ;
+- `hotfix/<description>` pour une correction urgente en production ;
+- `refactor/<description>` pour une restructuration sans changement fonctionnel ;
+- `docs/<description>` pour la documentation ;
+- `chore/<description>` pour la maintenance technique.
 
-## From CFX to Open2077
+Utiliser des noms courts, explicites et en minuscules, séparés par des tirets.
 
-BT CORE is the next step for systems Botilus originally designed throughout
-that CFX journey. The goal is to convert the strongest ideas into native
-Open2077 resources while improving the parts that experience has shown can be
-clearer, safer, and easier to maintain.
+### Contenu attendu d'une PR
 
-That conversion means more than translating APIs. It means:
+Chaque PR doit préciser :
 
-- revisiting contracts instead of preserving accidental legacy behavior;
-- adapting architecture and lifecycle rules to Open2077;
-- turning isolated scripts into compatible modules built around one core;
-- applying lessons learned from years of real roleplay development;
-- documenting public behavior so users do not need to reverse-engineer code;
-- building a foundation that can evolve without becoming a patchwork.
+- le contexte et l'objectif du changement ;
+- les principales modifications réalisées ;
+- la manière dont le changement a été testé ;
+- les impacts, risques ou migrations éventuels ;
+- les tickets ou sujets associés, le cas échéant.
 
-Modern tools can accelerate this work, but they do not replace the experience
-behind the decisions. Every public contract remains something the project must
-understand, test, document, and maintain.
+### Conditions de validation
 
-## What we are building
+Une PR peut être fusionnée uniquement lorsque :
 
-BT CORE aims to provide one coherent ecosystem rather than another collection
-of scripts that happen to share a prefix.
+- les tests et contrôles automatiques réussissent ;
+- au moins une personne autre que l'auteur l'a approuvée ;
+- toutes les discussions bloquantes sont résolues ;
+- la branche est à jour avec `main` ;
+- la documentation a été adaptée si nécessaire.
 
-The project is built around:
+Les correctifs urgents suivent le même processus. Une urgence peut accélérer
+la revue, mais ne justifie jamais une modification directe de `main`.
 
-- a central core for shared character, identity, state, and persistence logic;
-- modular resources that can be installed and evolved independently;
-- predictable client and server exports with explicit contracts;
-- consistent configuration, permissions, errors, and lifecycle behavior;
-- practical documentation with executable examples;
-- resources shaped by real server needs rather than showcase-only features;
-- a testing ground that can also help improve the Open2077 ecosystem.
+### Mise en production
 
-The long-term objective is simple: bring together accumulated experience,
-knowledge, and technical standards in a core that feels designed as one system
-from the beginning.
-
-## Principles
-
-| Principle | Commitment |
-| :--- | :--- |
-| **Experience** | Turn a decade of hands-on roleplay development into practical decisions. |
-| **Cohesion** | Design the core and its resources as one ecosystem with shared conventions. |
-| **Quality** | Favor readable, testable, maintainable code over disposable releases. |
-| **Clear contracts** | Document inputs, outputs, failures, permissions, and lifecycle expectations. |
-| **Honest tooling** | Use modern tools transparently while keeping human ownership of every result. |
-| **Evolution** | Improve systems when evidence demands it without abandoning stability or users. |
-
-## Project status
-
-BT CORE is being built and validated alongside Open2077. Resources are released
-when their runtime behavior, public contracts, and documentation are ready to
-be used—not simply when a prototype looks convincing.
-
-The [official documentation](https://botilus.mintlify.io/en) is the source of
-truth for available resources, installation instructions, configuration, and
-public APIs.
-
-> **Built from experience. Reworked for a new platform.**
->
-> One core, one ecosystem, and years of knowledge brought together.
+Les déploiements de production sont réalisés uniquement depuis `main`, après
+fusion d'une PR validée. Une version publiée doit être identifiable par un tag
+ou une release lorsque le projet utilise un versionnement.
